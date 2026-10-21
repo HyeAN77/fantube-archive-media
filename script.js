@@ -56,3 +56,36 @@
   $("#year").textContent = new Date().getFullYear();
   renderVideos();
 })();
+// ============================================
+// FANTUBE ARCHIVE MEDIA
+// 뉴스 읽음 상태 저장
+// ============================================
+
+(() => {
+  // 현재 페이지의 파일명 가져오기
+  const page = location.pathname.split('/').pop() || 'index.html';
+
+  // 메인 페이지: 저장된 읽음 상태 표시
+  if (page === 'index.html' || page === '') {
+    document.querySelectorAll('.news-card').forEach(card => {
+      const link = card.querySelector('.news-art[href]');
+      if (!link) return;
+
+      // 기사 주소를 읽음 상태 저장 키로 사용
+      const articlePage = link.getAttribute('href');
+
+      // 이전에 읽은 기사라면 컬러 표시
+      if (localStorage.getItem('fantube-read-' + articlePage) === 'true') {
+        card.classList.add('is-read');
+      }
+    });
+
+    return;
+  }
+
+  // 기사 페이지: gisa.html, gisa002.html, gisa003.html 등
+  // 실제로 해당 페이지에 들어왔을 때 읽음 상태 저장
+  if (/^gisa\d*\.html$/i.test(page)) {
+    localStorage.setItem('fantube-read-' + page, 'true');
+  }
+})();

@@ -109,7 +109,15 @@
     transition: none;
   }
 }
+/* 읽은 기사: 흑백 필터 해제 */
+.news-card.is-read .news-art.news-art-photo::before {
+  filter: grayscale(0%);
+}
 
+/* 읽은 기사에 마우스를 올려도 컬러 유지 */
+.news-card.is-read .news-art.news-art-photo:hover::before {
+  filter: grayscale(0%);
+}
   </style>
 </head>
 <body>
@@ -200,8 +208,98 @@
     가을 축제의 마지막 날을 함께한 앳하트의 현장 소식.
   </p>
 </article>
-        <article class="news-card"><span class="news-number">NEWS / 002</span><div class="news-art news-art-alt">ARTIST<br>SPOTLIGHT<span>PEOPLE · MUSIC · MOMENTS</span></div><p class="news-category" data-ko="아티스트" data-en="ARTIST">아티스트</p><h3 data-ko="인터뷰, 활동 소식, 기억할 만한 순간을 기록합니다." data-en="Artist features, activity updates and memorable moments.">인터뷰, 활동 소식, 기억할 만한 순간을 기록합니다.</h3><p class="news-caption" data-ko="기사 콘텐츠를 준비 중입니다." data-en="Editorial content coming soon.">기사 콘텐츠를 준비 중입니다.</p></article>
-        <article class="news-card"><span class="news-number">NEWS / 003</span><div class="news-art news-art-third">CULTURE<br>LOG<span>K-POP · LIVE · CULTURE</span></div><p class="news-category" data-ko="K-POP 문화" data-en="K-POP CULTURE">K-POP 문화</p><h3 data-ko="무대와 팬 문화를 둘러싼 이야기를 모읍니다." data-en="Stories around stages, fandom and K-POP culture.">무대와 팬 문화를 둘러싼 이야기를 모읍니다.</h3><p class="news-caption" data-ko="기사 콘텐츠를 준비 중입니다." data-en="Editorial content coming soon.">기사 콘텐츠를 준비 중입니다.</p></article>
+                <!-- ==========================================
+             NEWS / 002 카드
+             수정할 곳:
+             1. 사진 파일명: news002.jpg
+             2. 기사 페이지: gisa002.html
+             3. 분류, 제목, 요약 문구
+             ========================================== -->
+        <article class="news-card">
+          <!-- 기사 번호 -->
+          <span class="news-number">NEWS / 002</span>
+
+          <!-- 대표 사진: 사진 파일은 index.html과 같은 폴더에 저장 -->
+          <a class="news-art news-art-photo"
+             href="gisa002.html"
+             style="--news-image: url('./KiiiKiii.png');"
+             aria-label="두 번째 기사 읽기">
+
+            <!-- 사진 위에 표시할 짧은 영문 문구 -->
+            <span class="news-art-title">ARTIST<br>SPOTLIGHT</span>
+
+            <!-- 사진 아래 출처 표시 -->
+            <span class="news-art-credit">FANTUBE ARCHIVE MEDIA</span>
+          </a>
+
+          <!-- 기사 분류: 예) 아티스트, 축제, 현장 취재 -->
+          <p class="news-category"
+             data-ko="KiiiKiii"
+             data-en="KiiiKiii">아티스트</p>
+
+          <!-- 기사 제목: 이곳의 한글과 영어 제목을 수정 -->
+          <h3>
+            <a href="gisa002.html"
+               data-ko="키키 인제 군장병 한마음 뮤직 페스티벌"
+               data-en="KiiiKiii Music Festival">
+              키키, 강원 인제 ‘군장병 한마음 뮤직 페스티벌’ 무대 장식… 공연 성황리 마무리
+            </a>
+          </h3>
+
+          <!-- 메인 페이지에 표시할 기사 요약 -->
+          <p class="news-caption"
+             data-ko="KiiiKiii 강원 인제 축제 성황"
+             data-en="KiiiKiii Music Festival cam">
+            그룹 키키(KiiiKiii)가 강원도 인제에서 열린 ‘군장병 한마음 뮤직 페스티벌’에 출연해 현장을 뜨겁게 달궜다.
+          </p>
+        </article>
+
+
+        <!-- ==========================================
+             NEWS / 003 카드
+             수정할 곳:
+             1. 사진 파일명: news003.jpg
+             2. 기사 페이지: gisa003.html
+             3. 분류, 제목, 요약 문구
+             ========================================== -->
+        <article class="news-card">
+          <!-- 기사 번호 -->
+          <span class="news-number">NEWS / 003</span>
+
+          <!-- 대표 사진: 사진 파일은 index.html과 같은 폴더에 저장 -->
+          <a class="news-art news-art-photo"
+             href="gisa003.html"
+             style="--news-image: url('./MEOVV.jpg');"
+             aria-label="세 번째 기사 읽기">
+
+            <!-- 사진 위에 표시할 짧은 영문 문구 -->
+            <span class="news-art-title">CULTURE<br>LOG</span>
+
+            <!-- 사진 아래 출처 표시 -->
+            <span class="news-art-credit">FANTUBE ARCHIVE MEDIA</span>
+          </a>
+
+          <!-- 기사 분류 -->
+          <p class="news-category"
+             data-ko="K-POP 문화"
+             data-en="K-POP CULTURE">K-POP 문화</p>
+
+          <!-- 기사 제목 -->
+          <h3>
+            <a href="gisa003.html"
+               data-ko="미야오(MEOVV), 협성대학교 축제 뜨겁게 달궜다… 캠퍼스 물들인 강렬한 퍼포먼스"
+               data-en="MEOVV PERFORMANCE">
+              미야오(MEOVV), 협성대학교 축제 뜨겁게 달궜다… 캠퍼스 물들인 강렬한 퍼포먼스
+            </a>
+          </h3>
+
+          <!-- 메인 페이지에 표시할 기사 요약 -->
+          <p class="news-caption"
+             data-ko="MEOVV 협성대 축제 성황리 마무리"
+             data-en="MEOVV University Festival">
+            그룹 미야오(MEOVV)가 협성대학교 축제 무대에 올라 캠퍼스를 뜨거운 열기로 물들였다.
+          </p>
+        </article>
       </div>
     </section>
 
