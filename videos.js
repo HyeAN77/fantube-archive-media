@@ -16,35 +16,35 @@
 */
 window.FAM_VIDEOS = [
   {
-    youtubeId: "eWdaMBoFOWA",
-    url: "https://www.youtube.com/watch?v=eWdaMBoFOWA",
+    youtubeId: "sneZmpBcDKg",
+    url: "https://www.youtube.com/watch?v=sneZmpBcDKg",
     category: "STAGE",
-    titleKo: "앳하트 — 무대 직캠",
-    titleEn: "AtHeart — Stage Cam",
+    titleKo: "아이브 — 쇼케이스 무대 직캠",
+    titleEn: "IVE — Showcase Stage Cam",
     date: "LATEST",
-    subtitleKo: "앳하트 구리 코스모스 축제",
-    subtitleEn: "AtHeart Guri COSMOS Festival fancam",
+    subtitleKo: "아이브 컴백 쇼케이스",
+    subtitleEn: "IVE comeback showcase",
     graphic: "STAGE CAM"
   },
   {
-    youtubeId: "kthim28tD6Y",
-    url: "https://www.youtube.com/watch?v=kthim28tD6Y",
+    youtubeId: "8OsvNP-oKlQ",
+    url: "https://www.youtube.com/watch?v=8OsvNP-oKlQ",
     category: "FAN EVENT",
-    titleKo: "팬사인회 현장 기록",
-    titleEn: "Fan Sign Event",
+    titleKo: "KiiiKiii 인제 축제 직캠",
+    titleEn: "KiiiKiii stage Fancam",
     date: "ARCHIVE",
-    subtitleKo: "뮤직플랜트 팬사인회 현장영상",
-    subtitleEn: "Fansign events moments",
+    subtitleKo: "KiiiKiii 강원 인제 군장병 한마음 축제",
+    subtitleEn: "KiiiKiii Festival cam",
     graphic: "FAN EVENT"
   },
   {
-    youtubeId: "eoZT4oWlO4o",
-    url: "https://www.youtube.com/watch?v=eoZT4oWlO4o",
+    youtubeId: "wKf2URVGOFw",
+    url: "https://www.youtube.com/watch?v=wKf2URVGOFw",
     category: "FESTIVAL",
     titleKo: "대학 축제 라이브",
     titleEn: "University Festival Live",
     date: "ARCHIVE",
-    subtitleKo: "앳하트 수원과학대학교 BIMA 축제 현장",
+    subtitleKo: "MEOVV 미야오 협성대학교 축제 직캠",
     subtitleEn: "Festival and live performance archive",
     graphic: "LIVE MOMENTS"
   }
