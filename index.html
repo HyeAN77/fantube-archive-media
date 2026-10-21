@@ -61,6 +61,55 @@
     @media (prefers-reduced-motion: reduce) {
       .news-art.news-art-photo::before { transition: none; }
     }
+    /* 메인 히어로 배경 로고 */
+.hero-logo-watermark {
+  position: absolute;
+  top: 50%;
+  right: 7%;
+  width: clamp(180px, 32vw, 460px);
+  aspect-ratio: 1;
+  transform: translate(24px, -50%);
+  opacity: 0.09;
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    opacity 0.8s ease,
+    transform 1s cubic-bezier(.2,.7,.2,1),
+    filter 0.8s ease;
+}
+
+.hero-logo-watermark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 마우스를 올리면 왼쪽으로 이동하며 선명해짐 */
+.hero:hover .hero-logo-watermark {
+  transform: translate(-18px, -50%);
+  opacity: 0.2;
+  filter: blur(0);
+}
+
+/* 모바일에서도 은은하게 표시 */
+@media (max-width: 768px) {
+  .hero-logo-watermark {
+    width: 55vw;
+    right: 3%;
+    opacity: 0.08;
+    filter: blur(1px);
+  }
+}
+
+/* 움직임 줄이기 설정을 사용하는 방문자 배려 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-watermark {
+    transition: none;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -88,6 +137,9 @@
   <main>
     <section class="hero" id="home">
       <div class="hero-grid"></div>
+      <div class="hero-logo-watermark" aria-hidden="true">
+  <img src="fantube-signature.png" alt="">
+</div>
       <div class="hero-content">
         <p class="eyebrow"><span class="live-dot"></span><span data-ko="독립 엔터테인먼트 미디어" data-en="INDEPENDENT ENTERTAINMENT MEDIA">독립 엔터테인먼트 미디어</span></p>
         <h1>BEYOND THE<br><span>ARCHIVE.</span><br>INTO THE<br><span class="outline">SPOTLIGHT.</span></h1>
@@ -96,7 +148,7 @@
           <a class="circle-link" href="#archive"><span data-ko="아카이브 보기" data-en="EXPLORE ARCHIVE">아카이브 보기</span><b>↘</b></a>
         </div>
       </div>
-      <div class="hero-index"><span>FAM / 001</span><span>SEOUL, KR</span><span>EST. 2024</span></div>
+      <div class="hero-index"><span>FAN / 001</span><span>SEOUL, KR</span><span>EST. 2024</span></div>
       <div class="hero-vertical">K-POP · LIVE · CULTURE · ARCHIVE</div>
     </section>
 
