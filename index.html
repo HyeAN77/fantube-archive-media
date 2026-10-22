@@ -384,7 +384,7 @@
           return;
         }
 
-        articles.forEach((article, index) => {
+        articles.slice(0, 6).forEach((article, index) => {
           const card = document.createElement("article");
           card.className = "news-card";
 
