@@ -81,6 +81,27 @@ async function handleArticles(request, env, url) {
 
   if (request.method === "GET") {
     try {
+      
+      // 기사 상세 조회: ID 또는 slug로 기사 한 건 가져오기
+      const slug = url.searchParams.get("slug");
+
+      if (id || slug) {
+        const article = await env.DB.prepare(
+          `SELECT id, title, slug, excerpt, body, category,
+                  thumbnail_url, created_at, updated_at
+           FROM articles
+           WHERE ${id ? "id = ?" : "slug = ?"}
+             AND published = 1
+           LIMIT 1`
+        ).bind(id ? Number(id) : slug).first();
+
+        if (!article) {
+          return json({ error: "기사를 찾을 수 없습니다." }, 404);
+        }
+
+        return json({ article });
+      }
+
       const query = admin
         ? `SELECT id, title, slug, excerpt, body, category,
              thumbnail_url, published, created_at, updated_at
