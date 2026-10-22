@@ -166,13 +166,14 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
           <div class="grid">
             <div class="field">
               <label for="videoCategory">카테고리</label>
-              <select id="videoCategory">
-                <option value="FANCAM">FANCAM</option>
-                <option value="PERFORMANCE">PERFORMANCE</option>
-                <option value="EVENT">EVENT</option>
-                <option value="BEHIND">BEHIND</option>
-                <option value="SHORTS">SHORTS</option>
-              </select>
+              
+<select id="videoCategory">
+  <option value="STAGE">STAGE CAM</option>
+  <option value="FAN EVENT">FAN EVENT</option>
+  <option value="FESTIVAL">FESTIVAL</option>
+  <option value="OTHER">OTHER (기타)</option>
+</select>
+
             </div>
             <div class="field">
               <label for="shootDate">촬영 날짜</label>
@@ -470,7 +471,20 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       $("videoId").value = v.id;
       $("videoTitle").value = v.title || "";
       $("youtubeUrl").value = v.youtube_id || "";
-      $("videoCategory").value = v.category || "FANCAM";
+      
+const oldCategory = (v.category || "").toUpperCase();
+
+$("videoCategory").value =
+  oldCategory === "STAGE" ||
+  oldCategory.includes("FANCAM") ||
+  oldCategory.includes("PERFORMANCE")
+    ? "STAGE"
+    : oldCategory.includes("FAN EVENT") || oldCategory === "EVENT"
+      ? "FAN EVENT"
+      : oldCategory.includes("FESTIVAL")
+        ? "FESTIVAL"
+        : "OTHER";
+
       $("videoDescription").value = v.description || "";
       $("shootDate").value = v.shoot_date || "";
       $("videoPublished").checked = Boolean(v.published);
