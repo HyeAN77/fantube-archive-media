@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ko">
 <head>
@@ -6,12 +7,13 @@
   <meta name="theme-color" content="#0a0a0a">
   <meta name="description" content="FANTUBE ARCHIVE MEDIA — Capturing the moments. Preserving the stories. K-POP and entertainment video archive.">
   <title>FANTUBE ARCHIVE MEDIA — Independent Entertainment Media</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
   <style>
-    /* NEWS 001 대표 사진: 다음 기사도 같은 클래스를 재사용할 수 있습니다. */
     .news-art.news-art-photo {
       position: relative;
       display: flex;
@@ -24,13 +26,13 @@
       text-decoration: none;
       background: #222;
     }
+
     .news-art.news-art-photo::before {
       content: "";
       position: absolute;
       inset: 0;
       z-index: -2;
       background-image: var(--news-image);
-      /* 사진 전체가 보이도록 프레임 안에 맞춤: 잘림 방지 */
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -38,6 +40,7 @@
       transform: scale(1);
       transition: filter .45s ease, transform .6s ease;
     }
+
     .news-art.news-art-photo::after {
       content: "";
       position: absolute;
@@ -46,88 +49,90 @@
       background: linear-gradient(0deg, rgba(0,0,0,.82), rgba(0,0,0,.05) 75%);
       pointer-events: none;
     }
+
     .news-art.news-art-photo:hover::before,
     .news-art.news-art-photo:focus-visible::before {
       filter: grayscale(0%);
       transform: scale(1.04);
     }
+
     .news-art.news-art-photo .news-art-title,
     .news-art.news-art-photo .news-art-credit {
       position: relative;
       z-index: 1;
     }
-    .news-art.news-art-photo .news-art-title { display: block; }
-    .news-art.news-art-photo .news-art-credit { display: block; }
-    @media (prefers-reduced-motion: reduce) {
-      .news-art.news-art-photo::before { transition: none; }
+
+    .news-art.news-art-photo .news-art-title,
+    .news-art.news-art-photo .news-art-credit {
+      display: block;
     }
-    /* 메인 히어로 배경 로고 */
-.hero-logo-watermark {
-  position: absolute;
-  top: 50%;
-  right: 7%;
-  width: clamp(300px, 50vw, 700px);
-  aspect-ratio: 1;
-  transform: translate(24px, -50%);
-  opacity: 0.09;
-  filter: blur(2px);
-  pointer-events: none;
-  z-index: 0;
-  transition:
-    opacity 0.8s ease,
-    transform 1s cubic-bezier(.2,.7,.2,1),
-    filter 0.8s ease;
-}
 
-.hero-logo-watermark img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
+    .news-loading {
+      color: #888;
+      padding: 30px 0;
+      font-size: 14px;
+    }
 
-/* 마우스를 올리면 왼쪽으로 이동하며 선명해짐 */
-.hero:hover .hero-logo-watermark {
-  transform: translate(-18px, -50%);
-  opacity: 0.2;
-  filter: blur(0);
-}
+    .hero-logo-watermark {
+      position: absolute;
+      top: 50%;
+      right: 7%;
+      width: clamp(300px, 50vw, 700px);
+      aspect-ratio: 1;
+      transform: translate(24px, -50%);
+      opacity: 0.09;
+      filter: blur(2px);
+      pointer-events: none;
+      z-index: 0;
+      transition:
+        opacity 0.8s ease,
+        transform 1s cubic-bezier(.2,.7,.2,1),
+        filter 0.8s ease;
+    }
 
-/* 모바일에서도 은은하게 표시 */
-@media (max-width: 768px) {
-  .hero-logo-watermark {
-    width: 55vw;
-    right: 3%;
-    opacity: 0.08;
-    filter: blur(1px);
-  }
-}
+    .hero-logo-watermark img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
-/* 움직임 줄이기 설정을 사용하는 방문자 배려 */
-@media (prefers-reduced-motion: reduce) {
-  .hero-logo-watermark {
-    transition: none;
-  }
-}
-/* 읽은 기사: 흑백 필터 해제 */
-.news-card.is-read .news-art.news-art-photo::before {
-  filter: grayscale(0%);
-}
+    .hero:hover .hero-logo-watermark {
+      transform: translate(-18px, -50%);
+      opacity: 0.2;
+      filter: blur(0);
+    }
 
-/* 읽은 기사에 마우스를 올려도 컬러 유지 */
-.news-card.is-read .news-art.news-art-photo:hover::before {
-  filter: grayscale(0%);
-}
+    @media (max-width: 768px) {
+      .hero-logo-watermark {
+        width: 55vw;
+        right: 3%;
+        opacity: 0.08;
+        filter: blur(1px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-logo-watermark,
+      .news-art.news-art-photo::before {
+        transition: none;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="topline"></div>
+
   <header class="site-header">
     <a class="brand" href="#home" aria-label="FANTUBE ARCHIVE MEDIA home">
       <img class="brand-mark" src="fantube-signature.png" alt="FANTUBE ARCHIVE signature mark">
-      <span class="brand-copy"><span class="brand-main">FANTUBE ARCHIVE</span>
-      <span class="brand-sub">MEDIA <i></i> INDEPENDENT ENTERTAINMENT</span></span>
+      <span class="brand-copy">
+        <span class="brand-main">FANTUBE ARCHIVE</span>
+        <span class="brand-sub">MEDIA <i></i> INDEPENDENT ENTERTAINMENT</span>
+      </span>
     </a>
+
     <nav class="desktop-nav" aria-label="Main navigation">
       <a href="#home" data-ko="홈" data-en="HOME">홈</a>
       <a href="#news" data-ko="뉴스" data-en="NEWS">뉴스</a>
@@ -136,46 +141,93 @@
       <a href="#about" data-ko="소개" data-en="ABOUT">소개</a>
       <a href="#contact" data-ko="문의" data-en="CONTACT">문의</a>
     </nav>
+
     <div class="header-actions">
       <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN</button>
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><span></span><span></span></button>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
     </div>
   </header>
 
   <main>
     <section class="hero" id="home">
       <div class="hero-grid"></div>
+
       <div class="hero-logo-watermark" aria-hidden="true">
-  <img src="fantube-signature.png" alt="">
-</div>
+        <img src="fantube-signature.png" alt="">
+      </div>
+
       <div class="hero-content">
-        <p class="eyebrow"><span class="live-dot"></span><span data-ko="독립 엔터테인먼트 미디어" data-en="INDEPENDENT ENTERTAINMENT MEDIA">독립 엔터테인먼트 미디어</span></p>
-        <h1>BEYOND THE<br><span>ARCHIVE.</span><br>INTO THE<br><span class="outline">SPOTLIGHT.</span></h1>
+        <p class="eyebrow">
+          <span class="live-dot"></span>
+          <span data-ko="독립 엔터테인먼트 미디어" data-en="INDEPENDENT ENTERTAINMENT MEDIA">독립 엔터테인먼트 미디어</span>
+        </p>
+
+        <h1>
+          BEYOND THE<br>
+          <span>ARCHIVE.</span><br>
+          INTO THE<br>
+          <span class="outline">SPOTLIGHT.</span>
+        </h1>
+
         <div class="hero-bottom">
-          <p class="hero-copy" data-ko="순간을 기록하고,<br>이야기를 보존합니다." data-en="Capturing the moments.<br>Preserving the stories.">순간을 기록하고,<br>이야기를 보존합니다.</p>
-          <a class="circle-link" href="#archive"><span data-ko="아카이브 보기" data-en="EXPLORE ARCHIVE">아카이브 보기</span><b>↘</b></a>
+          <p class="hero-copy" data-ko="순간을 기록하고,<br>이야기를 보존합니다." data-en="Capturing the moments.<br>Preserving the stories.">
+            순간을 기록하고,<br>이야기를 보존합니다.
+          </p>
+          <a class="circle-link" href="#archive">
+            <span data-ko="아카이브 보기" data-en="EXPLORE ARCHIVE">아카이브 보기</span>
+            <b>↘</b>
+          </a>
         </div>
       </div>
-      <div class="hero-index"><span>FAN / 001</span><span>SEOUL, KR</span><span>EST. 2024</span></div>
+
+      <div class="hero-index">
+        <span>FAN / 001</span>
+        <span>SEOUL, KR</span>
+        <span>EST. 2024</span>
+      </div>
       <div class="hero-vertical">K-POP · LIVE · CULTURE · ARCHIVE</div>
     </section>
 
     <section class="ticker" aria-label="Media focus">
       <div class="ticker-track">
-        <span>STAGE CAM</span><b>✳</b><span>FAN SIGN</span><b>✳</b><span>LIVE MOMENTS</span><b>✳</b><span>K-POP CULTURE</span><b>✳</b><span>STAGE CAM</span><b>✳</b><span>FAN SIGN</span><b>✳</b><span>LIVE MOMENTS</span><b>✳</b><span>K-POP CULTURE</span><b>✳</b>
+        <span>STAGE CAM</span><b>✳</b>
+        <span>FAN SIGN</span><b>✳</b>
+        <span>LIVE MOMENTS</span><b>✳</b>
+        <span>K-POP CULTURE</span><b>✳</b>
+        <span>STAGE CAM</span><b>✳</b>
+        <span>FAN SIGN</span><b>✳</b>
+        <span>LIVE MOMENTS</span><b>✳</b>
+        <span>K-POP CULTURE</span><b>✳</b>
       </div>
     </section>
 
     <section class="section about-section" id="about">
-      <div class="section-kicker"><span>01 / ABOUT</span><span data-ko="우리가 기록하는 이야기" data-en="WHO WE ARE">우리가 기록하는 이야기</span></div>
+      <div class="section-kicker">
+        <span>01 / ABOUT</span>
+        <span data-ko="우리가 기록하는 이야기" data-en="WHO WE ARE">우리가 기록하는 이야기</span>
+      </div>
+
       <div class="about-layout">
-        <h2 data-ko="무대 위의 순간을<br>오래 남는 기록으로." data-en="Moments on stage.<br>Stories that stay.">무대 위의 순간을<br>오래 남는 기록으로.</h2>
+        <h2 data-ko="무대 위의 순간을<br>오래 남는 기록으로." data-en="Moments on stage.<br>Stories that stay.">
+          무대 위의 순간을<br>오래 남는 기록으로.
+        </h2>
+
         <div class="about-text">
-          <p data-ko="FANTUBE ARCHIVE MEDIA는 K-POP과 엔터테인먼트의 순간을 기록하고, 무대와 현장의 이야기를 영상으로 보존하는 독립 미디어 아카이브입니다." data-en="FANTUBE ARCHIVE MEDIA is an independent entertainment archive documenting K-POP moments and preserving stories from the stage and beyond.">FANTUBE ARCHIVE MEDIA는 K-POP과 엔터테인먼트의 순간을 기록하고, 무대와 현장의 이야기를 영상으로 보존하는 독립 미디어 아카이브입니다.</p>
-          <p class="muted" data-ko="공연 · 팬 이벤트 · 페스티벌 · 현장 기록" data-en="LIVE PERFORMANCE · FAN EVENTS · FESTIVALS · FIELD STORIES">공연 · 팬 이벤트 · 페스티벌 · 현장 기록</p>
-          <a class="text-link" href="#archive"><span data-ko="영상 아카이브 둘러보기" data-en="BROWSE THE VIDEO ARCHIVE">영상 아카이브 둘러보기</span><span>↗</span></a>
+          <p data-ko="FANTUBE ARCHIVE MEDIA는 K-POP과 엔터테인먼트의 순간을 기록하고, 무대와 현장의 이야기를 영상으로 보존하는 독립 미디어 아카이브입니다." data-en="FANTUBE ARCHIVE MEDIA is an independent entertainment archive documenting K-POP moments and preserving stories from the stage and beyond.">
+            FANTUBE ARCHIVE MEDIA는 K-POP과 엔터테인먼트의 순간을 기록하고, 무대와 현장의 이야기를 영상으로 보존하는 독립 미디어 아카이브입니다.
+          </p>
+          <p class="muted" data-ko="공연 · 팬 이벤트 · 페스티벌 · 현장 기록" data-en="LIVE PERFORMANCE · FAN EVENTS · FESTIVALS · FIELD STORIES">
+            공연 · 팬 이벤트 · 페스티벌 · 현장 기록
+          </p>
+          <a class="text-link" href="#archive">
+            <span data-ko="영상 아카이브 둘러보기" data-en="BROWSE THE VIDEO ARCHIVE">영상 아카이브 둘러보기</span>
+            <span>↗</span>
+          </a>
         </div>
       </div>
+
       <div class="about-stats">
         <div><strong>01</strong><span data-ko="현장 중심" data-en="ON LOCATION">현장 중심</span></div>
         <div><strong>4K</strong><span data-ko="영상 기록" data-en="VIDEO ARCHIVE">영상 기록</span></div>
@@ -184,131 +236,40 @@
     </section>
 
     <section class="section news-section" id="news">
-      <div class="section-kicker"><span>02 / NEWS DESK</span><span data-ko="뉴스와 현장 소식" data-en="NEWS & UPDATES">뉴스와 현장 소식</span></div>
-      <div class="archive-heading">
-        <h2 data-ko="LATEST<br>NEWS<span class='period'>.</span>" data-en="LATEST<br>NEWS<span class='period'>.</span>">LATEST<br>NEWS<span class="period">.</span></h2>
-        <p data-ko="아티스트와 무대를 둘러싼 최신 기록." data-en="Stories and updates from artists, stages and fan culture.">아티스트와 무대를 둘러싼 최신 기록.</p>
+      <div class="section-kicker">
+        <span>02 / NEWS DESK</span>
+        <span data-ko="뉴스와 현장 소식" data-en="NEWS & UPDATES">뉴스와 현장 소식</span>
       </div>
-      <div class="news-grid">
-        <article class="news-card">
-  <span class="news-number">NEWS / 001</span>
-  <a class="news-art news-art-photo" href="gisa.html"
-     style="--news-image: url('./AtHeart.png');"
-     aria-label="앳하트 구리 코스모스 축제 기사 읽기">
-    <span class="news-art-title">ATHEART<br>GURI FESTIVAL</span>
-    <span class="news-art-credit">FANTUBE ARCHIVE MEDIA</span>
-  </a>
-  <p class="news-category" data-ko="축제 · 현장 취재" data-en="FESTIVAL · FIELD REPORT">축제 · 현장 취재</p>
-  <h3>
-    <a href="gisa.html" data-ko="앳하트, 2026 구리 코스모스 축제 무대 장식" data-en="AtHeart Takes the Stage at Guri Cosmos Festival">
-      앳하트, 2026 구리 코스모스 축제 무대 장식
-    </a>
-  </h3>
-  <p class="news-caption" data-ko="가을 축제의 마지막 날을 함께한 앳하트의 현장 소식." data-en="AtHeart joins the final day of the autumn festival.">
-    가을 축제의 마지막 날을 함께한 앳하트의 현장 소식.
-  </p>
-</article>
-                <!-- ==========================================
-             NEWS / 002 카드
-             수정할 곳:
-             1. 사진 파일명: news002.jpg
-             2. 기사 페이지: gisa002.html
-             3. 분류, 제목, 요약 문구
-             ========================================== -->
-        <article class="news-card">
-          <!-- 기사 번호 -->
-          <span class="news-number">NEWS / 002</span>
 
-          <!-- 대표 사진: 사진 파일은 index.html과 같은 폴더에 저장 -->
-          <a class="news-art news-art-photo"
-             href="gisa002.html"
-             style="--news-image: url('./KiiiKiii.png');"
-             aria-label="두 번째 기사 읽기">
+      <div class="archive-heading">
+        <h2 data-ko="LATEST<br>NEWS<span class='period'>.</span>" data-en="LATEST<br>NEWS<span class='period'>.</span>">
+          LATEST<br>NEWS<span class="period">.</span>
+        </h2>
+        <p data-ko="아티스트와 무대를 둘러싼 최신 기록." data-en="Stories and updates from artists, stages and fan culture.">
+          아티스트와 무대를 둘러싼 최신 기록.
+        </p>
+      </div>
 
-            <!-- 사진 위에 표시할 짧은 영문 문구 -->
-            <span class="news-art-title">ARTIST<br>SPOTLIGHT</span>
-
-            <!-- 사진 아래 출처 표시 -->
-            <span class="news-art-credit">FANTUBE ARCHIVE MEDIA</span>
-          </a>
-
-          <!-- 기사 분류: 예) 아티스트, 축제, 현장 취재 -->
-          <p class="news-category"
-             data-ko="KiiiKiii"
-             data-en="KiiiKiii">아티스트</p>
-
-          <!-- 기사 제목: 이곳의 한글과 영어 제목을 수정 -->
-          <h3>
-            <a href="gisa002.html"
-               data-ko="키키 인제 군장병 한마음 뮤직 페스티벌"
-               data-en="KiiiKiii Music Festival">
-              키키, 강원 인제 ‘군장병 한마음 뮤직 페스티벌’ 무대 장식… 공연 성황리 마무리
-            </a>
-          </h3>
-
-          <!-- 메인 페이지에 표시할 기사 요약 -->
-          <p class="news-caption"
-             data-ko="KiiiKiii 강원 인제 축제 성황"
-             data-en="KiiiKiii Music Festival cam">
-            그룹 키키(KiiiKiii)가 강원도 인제에서 열린 ‘군장병 한마음 뮤직 페스티벌’에 출연해 현장을 뜨겁게 달궜다.
-          </p>
-        </article>
-
-
-        <!-- ==========================================
-             NEWS / 003 카드
-             수정할 곳:
-             1. 사진 파일명: news003.jpg
-             2. 기사 페이지: gisa003.html
-             3. 분류, 제목, 요약 문구
-             ========================================== -->
-        <article class="news-card">
-          <!-- 기사 번호 -->
-          <span class="news-number">NEWS / 003</span>
-
-          <!-- 대표 사진: 사진 파일은 index.html과 같은 폴더에 저장 -->
-          <a class="news-art news-art-photo"
-             href="gisa003.html"
-             style="--news-image: url('./MEOVV.jpg');"
-             aria-label="세 번째 기사 읽기">
-
-            <!-- 사진 위에 표시할 짧은 영문 문구 -->
-            <span class="news-art-title">CULTURE<br>LOG</span>
-
-            <!-- 사진 아래 출처 표시 -->
-            <span class="news-art-credit">FANTUBE ARCHIVE MEDIA</span>
-          </a>
-
-          <!-- 기사 분류 -->
-          <p class="news-category"
-             data-ko="K-POP 문화"
-             data-en="K-POP CULTURE">K-POP 문화</p>
-
-          <!-- 기사 제목 -->
-          <h3>
-            <a href="gisa003.html"
-               data-ko="미야오(MEOVV), 협성대학교 축제 뜨겁게 달궜다… 캠퍼스 물들인 강렬한 퍼포먼스"
-               data-en="MEOVV PERFORMANCE">
-              미야오(MEOVV), 협성대학교 축제 뜨겁게 달궜다… 캠퍼스 물들인 강렬한 퍼포먼스
-            </a>
-          </h3>
-
-          <!-- 메인 페이지에 표시할 기사 요약 -->
-          <p class="news-caption"
-             data-ko="MEOVV 협성대 축제 성황리 마무리"
-             data-en="MEOVV University Festival">
-            그룹 미야오(MEOVV)가 협성대학교 축제 무대에 올라 캠퍼스를 뜨거운 열기로 물들였다.
-          </p>
-        </article>
+      <div class="news-grid" id="newsGrid">
+        <p class="news-loading">기사를 불러오는 중입니다...</p>
       </div>
     </section>
 
     <section class="section archive-section" id="archive">
-      <div class="section-kicker"><span>03 / VIDEO ARCHIVE</span><span data-ko="최근 기록" data-en="LATEST STORIES">최근 기록</span></div>
-      <div class="archive-heading">
-        <h2 data-ko="영상 아카이브<span class='period'>.</span>" data-en="VIDEO ARCHIVE<span class='period'>.</span>">영상 아카이브<span class="period">.</span></h2>
-        <p data-ko="현장의 순간을 영상으로 만나보세요." data-en="Revisit the moments, captured on camera.">현장의 순간을 영상으로 만나보세요.</p>
+      <div class="section-kicker">
+        <span>03 / VIDEO ARCHIVE</span>
+        <span data-ko="최근 기록" data-en="LATEST STORIES">최근 기록</span>
       </div>
+
+      <div class="archive-heading">
+        <h2 data-ko="영상 아카이브<span class='period'>.</span>" data-en="VIDEO ARCHIVE<span class='period'>.</span>">
+          영상 아카이브<span class="period">.</span>
+        </h2>
+        <p data-ko="현장의 순간을 영상으로 만나보세요." data-en="Revisit the moments, captured on camera.">
+          현장의 순간을 영상으로 만나보세요.
+        </p>
+      </div>
+
       <div class="filter-row" id="filterRow" aria-label="Filter videos">
         <button class="filter active" data-filter="ALL">ALL / 전체</button>
         <button class="filter" data-filter="STAGE">STAGE CAM</button>
@@ -316,13 +277,31 @@
         <button class="filter" data-filter="FESTIVAL">FESTIVAL</button>
         <button class="filter" data-filter="OTHER">OTHER</button>
       </div>
-      <div class="video-grid" id="videoGrid"></div>
-      <p class="archive-note" data-ko="영상은 공식 YouTube 채널에서 감상할 수 있습니다." data-en="Watch the full videos on our YouTube channel.">영상은 공식 YouTube 채널에서 감상할 수 있습니다.</p>
+
+      <div class="video-grid" id="videoGrid">
+        <p class="news-loading">영상을 불러오는 중입니다...</p>
+      </div>
+
+      <p class="archive-note" data-ko="영상은 공식 YouTube 채널에서 감상할 수 있습니다." data-en="Watch the full videos on our YouTube channel.">
+        영상은 공식 YouTube 채널에서 감상할 수 있습니다.
+      </p>
     </section>
 
     <section class="section coverage-section" id="coverage">
-      <div class="section-kicker"><span>04 / EVENT COVERAGE</span><span data-ko="현장 취재 분야" data-en="WHAT WE COVER">현장 취재 분야</span></div>
-      <div class="coverage-heading"><h2 data-ko="현장의 순간을<br>가장 가까이에서." data-en="Closer to the<br>moments that matter.">현장의 순간을<br>가장 가까이에서.</h2><p data-ko="공연부터 팬 이벤트까지, 현장에서 만나는 K-POP의 순간을 영상과 기록으로 남깁니다." data-en="From live stages to fan events, we document K-POP moments through video and editorial coverage.">공연부터 팬 이벤트까지, 현장에서 만나는 K-POP의 순간을 영상과 기록으로 남깁니다.</p></div>
+      <div class="section-kicker">
+        <span>04 / EVENT COVERAGE</span>
+        <span data-ko="현장 취재 분야" data-en="WHAT WE COVER">현장 취재 분야</span>
+      </div>
+
+      <div class="coverage-heading">
+        <h2 data-ko="현장의 순간을<br>가장 가까이에서." data-en="Closer to the<br>moments that matter.">
+          현장의 순간을<br>가장 가까이에서.
+        </h2>
+        <p data-ko="공연부터 팬 이벤트까지, 현장에서 만나는 K-POP의 순간을 영상과 기록으로 남깁니다." data-en="From live stages to fan events, we document K-POP moments through video and editorial coverage.">
+          공연부터 팬 이벤트까지, 현장에서 만나는 K-POP의 순간을 영상과 기록으로 남깁니다.
+        </p>
+      </div>
+
       <div class="coverage-grid">
         <a href="#archive"><span>01</span><b data-ko="무대 · 공연" data-en="STAGE & LIVE">무대 · 공연</b><small>STAGE CAM / LIVE PERFORMANCE ↗</small></a>
         <a href="#archive"><span>02</span><b data-ko="팬사인회 · 팬 이벤트" data-en="FAN SIGN & EVENTS">팬사인회 · 팬 이벤트</b><small>FAN SIGN / FAN EVENTS ↗</small></a>
@@ -333,10 +312,21 @@
 
     <section class="contact-section" id="contact">
       <div class="contact-bg-type">LET'S<br>CONNECT.</div>
+
       <div class="contact-content">
-        <div class="section-kicker"><span>05 / CONTACT</span><span data-ko="함께 만들어갈 이야기" data-en="LET'S MAKE SOMETHING">함께 만들어갈 이야기</span></div>
-        <h2 data-ko="다음 이야기를<br>함께 만들어볼까요?" data-en="Have a story<br>to tell together?">다음 이야기를<br>함께 만들어볼까요?</h2>
-        <p data-ko="촬영 및 콘텐츠 협업 문의는 아래 채널로 연락해 주세요." data-en="For filming and content collaboration inquiries, reach out through our channels below.">촬영 및 콘텐츠 협업 문의는 아래 채널로 연락해 주세요.</p>
+        <div class="section-kicker">
+          <span>05 / CONTACT</span>
+          <span data-ko="함께 만들어갈 이야기" data-en="LET'S MAKE SOMETHING">함께 만들어갈 이야기</span>
+        </div>
+
+        <h2 data-ko="다음 이야기를<br>함께 만들어볼까요?" data-en="Have a story<br>to tell together?">
+          다음 이야기를<br>함께 만들어볼까요?
+        </h2>
+
+        <p data-ko="촬영 및 콘텐츠 협업 문의는 아래 채널로 연락해 주세요." data-en="For filming and content collaboration inquiries, reach out through our channels below.">
+          촬영 및 콘텐츠 협업 문의는 아래 채널로 연락해 주세요.
+        </p>
+
         <div class="contact-links">
           <a href="#" id="emailLink"><span>EMAIL</span><b id="emailText">이메일 주소 설정 필요</b><i>↗</i></a>
           <a href="#" id="youtubeLink" target="_blank" rel="noopener"><span>YOUTUBE</span><b>FANTUBE ARCHIVE MEDIA</b><i>↗</i></a>
@@ -347,11 +337,115 @@
   </main>
 
   <footer class="site-footer">
-    <a class="brand footer-brand" href="#home"><img class="brand-mark footer-mark" src="fantube-signature.png" alt=""><span class="brand-copy"><span class="brand-main">FANTUBE ARCHIVE</span><span class="brand-sub">MEDIA <i></i> INDEPENDENT ENTERTAINMENT</span></span></a>
-    <p data-ko="순간을 기록하고, 이야기를 보존합니다." data-en="Capturing the moments. Preserving the stories.">순간을 기록하고, 이야기를 보존합니다.</p>
-    <div class="footer-bottom"><span>© <span id="year"></span> FANTUBE ARCHIVE MEDIA</span><a href="#home">BACK TO TOP ↑</a></div>
+    <a class="brand footer-brand" href="#home">
+      <img class="brand-mark footer-mark" src="fantube-signature.png" alt="">
+      <span class="brand-copy">
+        <span class="brand-main">FANTUBE ARCHIVE</span>
+        <span class="brand-sub">MEDIA <i></i> INDEPENDENT ENTERTAINMENT</span>
+      </span>
+    </a>
+
+    <p data-ko="순간을 기록하고, 이야기를 보존합니다." data-en="Capturing the moments. Preserving the stories.">
+      순간을 기록하고, 이야기를 보존합니다.
+    </p>
+
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> FANTUBE ARCHIVE MEDIA</span>
+      <a href="#home">BACK TO TOP ↑</a>
+    </div>
   </footer>
+
   <script src="videos.js"></script>
   <script src="script.js"></script>
+
+  <!-- 어드민에 등록한 공개 기사를 메인 화면에 자동으로 표시 -->
+  <script>
+    (async function loadNewsArticles() {
+      const newsGrid = document.getElementById("newsGrid");
+      if (!newsGrid) return;
+
+      try {
+        const response = await fetch("/api/articles");
+
+        if (!response.ok) {
+          throw new Error("기사 API 응답 오류: " + response.status);
+        }
+
+        const result = await response.json();
+        const articles = Array.isArray(result)
+          ? result
+          : (result.articles || []);
+
+        newsGrid.replaceChildren();
+
+        if (articles.length === 0) {
+          newsGrid.innerHTML =
+            '<p class="news-loading">현재 공개된 기사가 없습니다.</p>';
+          return;
+        }
+
+        articles.forEach((article, index) => {
+          const card = document.createElement("article");
+          card.className = "news-card";
+
+          const number = document.createElement("span");
+          number.className = "news-number";
+          number.textContent =
+            "NEWS / " + String(index + 1).padStart(3, "0");
+
+          const imageLink = document.createElement("a");
+          imageLink.className = "news-art news-art-photo";
+          imageLink.href =
+            "gisa.html?slug=" + encodeURIComponent(article.slug || "");
+
+          const titleOverlay = document.createElement("span");
+          titleOverlay.className = "news-art-title";
+          titleOverlay.textContent = article.title || "NEWS";
+
+          const credit = document.createElement("span");
+          credit.className = "news-art-credit";
+          credit.textContent = "FANTUBE ARCHIVE MEDIA";
+
+          imageLink.append(titleOverlay, credit);
+
+          const imageUrl = (article.thumbnail_url || "").trim();
+
+          if (imageUrl) {
+            try {
+              const parsedUrl = new URL(imageUrl, location.origin);
+
+              if (["https:", "http:"].includes(parsedUrl.protocol)) {
+                imageLink.style.setProperty(
+                  "--news-image",
+                  `url("${parsedUrl.href.replace(/["\\\n\r]/g, "")}")`
+                );
+              }
+            } catch (_) {}
+          }
+
+          const category = document.createElement("p");
+          category.className = "news-category";
+          category.textContent = article.category || "NEWS";
+
+          const heading = document.createElement("h3");
+          const titleLink = document.createElement("a");
+          titleLink.href = imageLink.href;
+          titleLink.textContent = article.title || "제목 없음";
+          heading.appendChild(titleLink);
+
+          const caption = document.createElement("p");
+          caption.className = "news-caption";
+          caption.textContent = article.excerpt || "";
+
+          card.append(number, imageLink, category, heading, caption);
+          newsGrid.appendChild(card);
+        });
+      } catch (error) {
+        console.error("기사 목록 불러오기 실패:", error);
+        newsGrid.innerHTML =
+          '<p class="news-loading">기사를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</p>';
+      }
+    })();
+  </script>
 </body>
 </html>
