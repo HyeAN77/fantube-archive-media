@@ -1,3 +1,4 @@
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -19,14 +20,15 @@ export default {
   }
 };
 
-const json = (data, status = 200) =>
-  new Response(JSON.stringify(data), {
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store"
     }
   });
+}
 
 async function readBody(request) {
   try {
@@ -59,8 +61,8 @@ function isAdmin(request, env) {
   return Boolean(env.ADMIN_PASSWORD && password === env.ADMIN_PASSWORD);
 }
 
-function slugify(title) {
-  const slug = String(title || "")
+function slugify(value) {
+  const slug = String(value || "")
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9가-힣]+/g, "-")
@@ -81,10 +83,10 @@ async function handleArticles(request, env, url) {
     try {
       const query = admin
         ? `SELECT id, title, slug, excerpt, body, category,
-                  thumbnail_url, published, created_at, updated_at
+             thumbnail_url, published, created_at, updated_at
            FROM articles ORDER BY created_at DESC`
         : `SELECT id, title, slug, excerpt, category,
-                  thumbnail_url, created_at
+             thumbnail_url, created_at
            FROM articles WHERE published = 1
            ORDER BY created_at DESC`;
 
@@ -101,10 +103,11 @@ async function handleArticles(request, env, url) {
 
   if (request.method === "POST" || request.method === "PUT") {
     if (request.method === "PUT" && !id) {
-      return json({ error: "수정할 기사 ID가 필요합니다." }, 400);
+      return json({ error: "기사 ID가 필요합니다." }, 400);
     }
 
     const body = await readBody(request);
+
     if (!body || !String(body.title || "").trim()) {
       return json({ error: "기사 제목을 입력해 주세요." }, 400);
     }
@@ -122,16 +125,160 @@ async function handleArticles(request, env, url) {
       if (request.method === "POST") {
         const result = await env.DB.prepare(
           `INSERT INTO articles
-           (title, slug, excerpt, body, category, thumbnail_url,
-            published, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          (title, slug, excerpt, body, category, thumbnail_url,
+           published, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
         ).bind(
-          title, slug, excerpt, articleBody, category, thumbnail,
-          published, now, now
+          title, slug, excerpt, articleBody, category,
+          thumbnail, published, now, now
         ).run();
 
         return json({ ok: true, id: result.meta.last_row_id }, 201);
       }
 
-      await env.DB.prepare(
-        `UPDATE articles SET title = ?, slug = ?, excerpt = ?, body = ?,
+      const result = await env.DB.prepare(
+        `UPDATE articles SET title=?, slug=?, excerpt=?, body=?,
+         category=?, thumbnail_url=?, published=?, updated_at=?
+         WHERE id=?`
+      ).bind(
+        title, slug, excerpt, articleBody, category,
+        thumbnail, published, now, Number(id)
+      ).run();
+
+      if (!result.meta.changes) {
+        return json({ error: "해당 기사를 찾을 수 없습니다." }, 404);
+      }
+
+      return json({ ok: true });
+    } catch {
+      return json({ error: "기사 저장에 실패했습니다." }, 500);
+    }
+  }
+
+  if (request.method === "DELETE" && id) {
+    try {
+      const result = await env.DB.prepare(
+        "DELETE FROM articles WHERE id=?"
+      ).bind(Number(id)).run();
+
+      if (!result.meta.changes) {
+        return json({ error: "해당 기사를 찾을 수 없습니다." }, 404);
+      }
+
+      return json({ ok: true });
+    } catch {
+      return json({ error: "기사 삭제에 실패했습니다." }, 500);
+    }
+  }
+
+  return json({ error: "지원하지 않는 요청입니다." }, 405);
+}
+
+async function handleVideos(request, env, url) {
+  const id = url.pathname.match(/^\/api\/videos\/(\d+)$/)?.[1];
+  const admin = url.searchParams.get("admin") === "1";
+
+  if (admin && !isAdmin(request, env)) {
+    return json({ error: "관리자 로그인이 필요합니다." }, 401);
+  }
+
+  if (request.method === "GET") {
+    try {
+      const query = admin
+        ? `SELECT id, title, youtube_id, category, description,
+             shoot_date, published, created_at, updated_at
+           FROM videos ORDER BY created_at DESC`
+        : `SELECT id, title, youtube_id, category, description,
+             shoot_date, created_at
+           FROM videos WHERE published = 1
+           ORDER BY created_at DESC`;
+
+      const { results } = await env.DB.prepare(query).all();
+      return json({ videos: results });
+    } catch {
+      return json({ error: "영상 조회에 실패했습니다." }, 500);
+    }
+  }
+
+  if (!isAdmin(request, env)) {
+    return json({ error: "관리자 로그인이 필요합니다." }, 401);
+  }
+
+  if (request.method === "POST" || request.method === "PUT") {
+    if (request.method === "PUT" && !id) {
+      return json({ error: "영상 ID가 필요합니다." }, 400);
+    }
+
+    const body = await readBody(request);
+
+    if (!body || !String(body.title || "").trim()) {
+      return json({ error: "영상 제목을 입력해 주세요." }, 400);
+    }
+
+    const youtubeId = String(body.youtube_id || "").trim();
+
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(youtubeId)) {
+      return json({
+        error: "유효한 유튜브 영상 ID 11자리를 입력해 주세요."
+      }, 400);
+    }
+
+    const title = String(body.title).trim();
+    const category = String(body.category || "FANCAM");
+    const description = String(body.description || "");
+    const shootDate = String(body.shoot_date || "");
+    const published = body.published ? 1 : 0;
+    const now = new Date().toISOString();
+
+    try {
+      if (request.method === "POST") {
+        const result = await env.DB.prepare(
+          `INSERT INTO videos
+          (title, youtube_id, category, description, shoot_date,
+           published, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          title, youtubeId, category, description,
+          shootDate, published, now, now
+        ).run();
+
+        return json({ ok: true, id: result.meta.last_row_id }, 201);
+      }
+
+      const result = await env.DB.prepare(
+        `UPDATE videos SET title=?, youtube_id=?, category=?,
+         description=?, shoot_date=?, published=?, updated_at=?
+         WHERE id=?`
+      ).bind(
+        title, youtubeId, category, description,
+        shootDate, published, now, Number(id)
+      ).run();
+
+      if (!result.meta.changes) {
+        return json({ error: "해당 영상을 찾을 수 없습니다." }, 404);
+      }
+
+      return json({ ok: true });
+    } catch {
+      return json({ error: "영상 저장에 실패했습니다." }, 500);
+    }
+  }
+
+  if (request.method === "DELETE" && id) {
+    try {
+      const result = await env.DB.prepare(
+        "DELETE FROM videos WHERE id=?"
+      ).bind(Number(id)).run();
+
+      if (!result.meta.changes) {
+        return json({ error: "해당 영상을 찾을 수 없습니다." }, 404);
+      }
+
+      return json({ ok: true });
+    } catch {
+      return json({ error: "영상 삭제에 실패했습니다." }, 500);
+    }
+  }
+
+  return json({ error: "지원하지 않는 요청입니다." }, 405);
+}
