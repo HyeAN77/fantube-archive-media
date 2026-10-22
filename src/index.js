@@ -1,69 +1,137 @@
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const path = url.pathname;
 
-    // 기사 API
-    if (url.pathname === "/api/articles") {
-      return handleArticles(request, env);
+    if (path === "/api/admin/login" && request.method === "POST") {
+      return adminLogin(request, env);
     }
 
-    // 영상 API
-    if (url.pathname === "/api/videos") {
-      return handleVideos(request, env);
+    if (path === "/api/articles" || path.startsWith("/api/articles/")) {
+      return handleArticles(request, env, url);
     }
 
-    // 그 외 요청은 기존 정적 파일로 전달
+    if (path === "/api/videos" || path.startsWith("/api/videos/")) {
+      return handleVideos(request, env, url);
+    }
+
     return env.ASSETS.fetch(request);
   }
 };
 
-async function handleArticles(request, env) {
-  if (request.method !== "GET") {
-    return json({ error: "지원하지 않는 요청입니다." }, 405);
-  }
-
-  try {
-    const { results } = await env.DB.prepare(
-      `SELECT id, title, slug, excerpt, category,
-              thumbnail_url, created_at
-       FROM articles
-       WHERE published = 1
-       ORDER BY created_at DESC`
-    ).all();
-
-    return json({ articles: results });
-  } catch {
-    return json({ error: "기사 데이터베이스 연결을 확인해 주세요." }, 500);
-  }
-}
-
-async function handleVideos(request, env) {
-  if (request.method !== "GET") {
-    return json({ error: "지원하지 않는 요청입니다." }, 405);
-  }
-
-  try {
-    const { results } = await env.DB.prepare(
-      `SELECT id, title, youtube_id, category,
-              description, shoot_date, created_at
-       FROM videos
-       WHERE published = 1
-       ORDER BY created_at DESC`
-    ).all();
-
-    return json({ videos: results });
-  } catch {
-    return json({ error: "영상 데이터베이스 연결을 확인해 주세요." }, 500);
-  }
-}
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
+const json = (data, status = 200) =>
+  new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store"
     }
   });
+
+async function readBody(request) {
+  try {
+    return await request.json();
+  } catch {
+    return null;
+  }
 }
+
+async function adminLogin(request, env) {
+  const body = await readBody(request);
+
+  if (!body || typeof body.password !== "string") {
+    return json({ error: "비밀번호를 입력해 주세요." }, 400);
+  }
+
+  if (!env.ADMIN_PASSWORD || body.password !== env.ADMIN_PASSWORD) {
+    return json({ error: "비밀번호가 올바르지 않습니다." }, 401);
+  }
+
+  return json({ ok: true });
+}
+
+function isAdmin(request, env) {
+  const header = request.headers.get("Authorization") || "";
+  const password = header.startsWith("Bearer ")
+    ? header.slice(7)
+    : "";
+
+  return Boolean(env.ADMIN_PASSWORD && password === env.ADMIN_PASSWORD);
+}
+
+function slugify(title) {
+  const slug = String(title || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || `article-${crypto.randomUUID()}`;
+}
+
+async function handleArticles(request, env, url) {
+  const id = url.pathname.match(/^\/api\/articles\/(\d+)$/)?.[1];
+  const admin = url.searchParams.get("admin") === "1";
+
+  if (admin && !isAdmin(request, env)) {
+    return json({ error: "관리자 로그인이 필요합니다." }, 401);
+  }
+
+  if (request.method === "GET") {
+    try {
+      const query = admin
+        ? `SELECT id, title, slug, excerpt, body, category,
+                  thumbnail_url, published, created_at, updated_at
+           FROM articles ORDER BY created_at DESC`
+        : `SELECT id, title, slug, excerpt, category,
+                  thumbnail_url, created_at
+           FROM articles WHERE published = 1
+           ORDER BY created_at DESC`;
+
+      const { results } = await env.DB.prepare(query).all();
+      return json({ articles: results });
+    } catch {
+      return json({ error: "기사 조회에 실패했습니다." }, 500);
+    }
+  }
+
+  if (!isAdmin(request, env)) {
+    return json({ error: "관리자 로그인이 필요합니다." }, 401);
+  }
+
+  if (request.method === "POST" || request.method === "PUT") {
+    if (request.method === "PUT" && !id) {
+      return json({ error: "수정할 기사 ID가 필요합니다." }, 400);
+    }
+
+    const body = await readBody(request);
+    if (!body || !String(body.title || "").trim()) {
+      return json({ error: "기사 제목을 입력해 주세요." }, 400);
+    }
+
+    const now = new Date().toISOString();
+    const title = String(body.title).trim();
+    const slug = slugify(body.slug || title);
+    const excerpt = String(body.excerpt || "");
+    const articleBody = String(body.body || "");
+    const category = String(body.category || "NEWS");
+    const thumbnail = String(body.thumbnail_url || "");
+    const published = body.published ? 1 : 0;
+
+    try {
+      if (request.method === "POST") {
+        const result = await env.DB.prepare(
+          `INSERT INTO articles
+           (title, slug, excerpt, body, category, thumbnail_url,
+            published, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        ).bind(
+          title, slug, excerpt, articleBody, category, thumbnail,
+          published, now, now
+        ).run();
+
+        return json({ ok: true, id: result.meta.last_row_id }, 201);
+      }
+
+      await env.DB.prepare(
+        `UPDATE articles SET title = ?, slug = ?, excerpt = ?, body = ?,
