@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FANTUBE ARCHIVE MEDIA | Admin</title>
+<style>
+:root{--bg:#080d18;--panel:#111a2b;--line:#27344b;--text:#f4f7ff;--muted:#9aa9c0;--blue:#5c8dff;--red:#ff647c;--green:#48d6a0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Malgun Gothic",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+header{padding:24px max(20px,calc((100% - 1100px)/2));border-bottom:1px solid var(--line);background:#0b1220}
+.brand{font-size:20px;font-weight:800;letter-spacing:1.5px}
+.brand span{color:var(--blue)}
+header p{margin:8px 0 0;color:var(--muted);font-size:13px}
+main{max-width:1100px;margin:32px auto;padding:0 20px 60px}
+h1{font-size:28px;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 24px;line-height:1.6}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px}
+.hidden{display:none!important}
+label{display:block;font-size:13px;color:#c8d5e9;margin:0 0 8px}
+input,textarea,select{width:100%;padding:12px;background:#09111f;color:var(--text);border:1px solid var(--line);border-radius:8px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--blue)}
+textarea{min-height:130px;resize:vertical;line-height:1.65}
+.field{margin-bottom:17px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn{border:0;border-radius:8px;padding:11px 16px;font-weight:700;background:var(--blue);color:white}
+.btn.secondary{background:#25334b}
+.btn.danger{background:#632638}
+.btn.green{background:#12684e}
+.btn:disabled{opacity:.5;cursor:wait}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+.tabs{display:flex;gap:8px;margin-bottom:20px}
+.tab{background:transparent;border:1px solid var(--line);color:var(--muted);padding:12px 20px;border-radius:8px}
+.tab.active{background:var(--blue);color:white;border-color:var(--blue)}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.toolbar h2{font-size:19px;margin:0}
+.item{border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:10px}
+.item-title{font-weight:700;line-height:1.5;overflow-wrap:anywhere}
+.meta{font-size:12px;color:var(--muted);margin-top:8px}
+.item .actions{margin-top:12px}
+.status{display:inline-block;padding:4px 8px;border-radius:5px;font-size:11px;margin-left:6px}
+.status.live{background:#124b3d;color:#72efc0}
+.status.draft{background:#4c3c1b;color:#ffdb8b}
+.notice{padding:12px 14px;border-radius:8px;background:#0a1322;color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:16px}
+#message{white-space:pre-wrap;line-height:1.6;margin:14px 0;color:var(--green)}
+#message.error{color:#ff899b}
+.checkrow{display:flex;align-items:center;gap:10px;margin:12px 0}
+.checkrow input{width:auto}
+.checkrow label{margin:0}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
+@media(max-width:650px){main{margin-top:22px}.panel{padding:17px}.grid{grid-template-columns:1fr;gap:0}.toolbar{align-items:flex-start;flex-direction:column}.brand{font-size:17px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">FANTUBE <span>ARCHIVE</span> MEDIA</div>
+  <p>CONTENT MANAGEMENT SYSTEM · ADMIN</p>
+</header>
+
+<main>
+  <h1>콘텐츠 관리</h1>
+  <p class="sub">기사와 영상을 작성하고 공개 상태를 관리합니다.</p>
+
+  <section id="loginPanel" class="panel">
+    <h2>관리자 로그인</h2>
+    <p class="sub">Cloudflare에 등록한 ADMIN_PASSWORD를 입력하세요.</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="password">관리자 비밀번호</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn" type="submit">로그인</button>
+    </form>
+    <div id="loginMessage" role="status"></div>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="notice">
+      임시저장한 콘텐츠는 공개 API에 표시되지 않습니다.
+      공개를 선택하면 공개 API에서 조회할 수 있습니다.
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="articles">기사 관리</button>
+      <button class="tab" data-tab="videos">영상 관리</button>
+    </div>
+
+    <section id="articlesSection">
+      <div class="panel">
+        <div class="toolbar">
+          <h2 id="articleFormHeading">새 기사 작성</h2>
+          <button class="btn secondary" id="newArticle" type="button">새 기사</button>
+        </div>
+        <form id="articleForm">
+          <input type="hidden" id="articleId">
+          <div class="field">
+            <label for="articleTitle">기사 제목 *</label>
+            <input id="articleTitle" required maxlength="300" placeholder="기사 제목을 입력하세요">
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="articleCategory">카테고리</label>
+              <select id="articleCategory">
+                <option value="NEWS">NEWS</option>
+                <option value="ARTIST">ARTIST</option>
+                <option value="EVENT">EVENT</option>
+                <option value="INTERVIEW">INTERVIEW</option>
+                <option value="FANtube">FANtube</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="articleSlug">기사 주소용 슬러그 (선택)</label>
+              <input id="articleSlug" placeholder="비워두면 제목으로 자동 생성">
+            </div>
+          </div>
+          <div class="field">
+            <label for="articleExcerpt">기사 요약</label>
+            <textarea id="articleExcerpt" style="min-height:80px" placeholder="기사 목록에 표시할 요약"></textarea>
+          </div>
+          <div class="field">
+            <label for="articleBody">기사 본문</label>
+            <textarea id="articleBody" style="min-height:240px" placeholder="기사 내용을 입력하세요"></textarea>
+          </div>
+          <div class="field">
+            <label for="articleThumbnail">대표 이미지 URL</label>
+            <input id="articleThumbnail" type="url" placeholder="https://...">
+          </div>
+          <div class="checkrow">
+            <input id="articlePublished" type="checkbox">
+            <label for="articlePublished">홈페이지에 공개</label>
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">기사 저장</button>
+            <button class="btn secondary" type="button" id="resetArticle">입력 초기화</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="toolbar">
+          <h2>등록된 기사</h2>
+          <button class="btn secondary" type="button" id="refreshArticles">새로고침</button>
+        </div>
+        <div id="articleList">로그인 후 불러옵니다.</div>
+      </div>
+    </section>
+
+    <section id="videosSection" class="hidden">
+      <div class="panel">
+        <div class="toolbar">
+          <h2 id="videoFormHeading">새 영상 등록</h2>
+          <button class="btn secondary" id="newVideo" type="button">새 영상</button>
+        </div>
+        <form id="videoForm">
+          <input type="hidden" id="videoId">
+          <div class="field">
+            <label for="videoTitle">영상 제목 *</label>
+            <input id="videoTitle" required maxlength="300" placeholder="예: 앳하트 나현 직캠">
+          </div>
+          <div class="field">
+            <label for="youtubeUrl">유튜브 URL 또는 영상 ID *</label>
+            <input id="youtubeUrl" required placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="videoCategory">카테고리</label>
+              <select id="videoCategory">
+                <option value="FANCAM">FANCAM</option>
+                <option value="PERFORMANCE">PERFORMANCE</option>
+                <option value="EVENT">EVENT</option>
+                <option value="BEHIND">BEHIND</option>
+                <option value="SHORTS">SHORTS</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="shootDate">촬영 날짜</label>
+              <input id="shootDate" type="date">
+            </div>
+          </div>
+          <div class="field">
+            <label for="videoDescription">설명</label>
+            <textarea id="videoDescription" style="min-height:90px" placeholder="영상 설명을 입력하세요"></textarea>
+          </div>
+          <div class="checkrow">
+            <input id="videoPublished" type="checkbox">
+            <label for="videoPublished">홈페이지에 공개</label>
+          </div>
+          <div class="actions">
+            <button class="btn" type="submit">영상 저장</button>
+            <button class="btn secondary" type="button" id="resetVideo">입력 초기화</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="toolbar">
+          <h2>등록된 영상</h2>
+          <button class="btn secondary" type="button" id="refreshVideos">새로고침</button>
+        </div>
+        <div id="videoList">로그인 후 불러옵니다.</div>
+      </div>
+    </section>
+
+    <div id="message" role="status" aria-live="polite"></div>
+    <button class="btn secondary" id="logout" type="button">로그아웃</button>
+  </section>
+</main>
+<footer>FANTUBE ARCHIVE MEDIA · ADMIN</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const PASSWORD_KEY = "fantube_admin_password";
+  let password = sessionStorage.getItem(PASSWORD_KEY) || "";
+  let articles = [];
+  let videos = [];
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;",
+      '"': "&quot;", "'": "&#39;"
+    })[char]);
+  }
+
+  function showMessage(text, error = false) {
+    $("message").textContent = text;
+    $("message").classList.toggle("error", error);
+  }
+
+  async function api(path, options = {}) {
+    const response = await fetch(path, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${password}`,
+        ...(options.headers || {})
+      }
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+      logout();
+      throw new Error(data.error || "로그인이 만료되었습니다. 다시 로그인해 주세요.");
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || `요청 실패 (${response.status})`);
+    }
+
+    return data;
+  }
+
+  function setLoggedIn(value) {
+    $("loginPanel").classList.toggle("hidden", value);
+    $("dashboard").classList.toggle("hidden", !value);
+  }
+
+  function logout() {
+    password = "";
+    sessionStorage.removeItem(PASSWORD_KEY);
+    setLoggedIn(false);
+    $("loginMessage").textContent = "";
+  }
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const message = $("loginMessage");
+    const entered = $("password").value;
+    message.textContent = "로그인 확인 중...";
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: entered })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "로그인에 실패했습니다.");
+
+      password = entered;
+      sessionStorage.setItem(PASSWORD_KEY, password);
+      $("password").value = "";
+      message.textContent = "";
+      setLoggedIn(true);
+      await refreshAll();
+    } catch (error) {
+      message.textContent = error.message;
+    }
+  });
+
+  function renderArticles() {
+    $("articleList").innerHTML = articles.length ? articles.map(a => `
+      <div class="item">
+        <div class="item-title">${escapeHTML(a.title)}
+          <span class="status ${a.published ? "live" : "draft"}">${a.published ? "공개" : "임시저장"}</span>
+        </div>
+        <div class="meta">ID ${a.id} · ${escapeHTML(a.category || "NEWS")} · ${escapeHTML(a.created_at || "")}</div>
+        <div class="actions">
+          <button class="btn secondary" data-edit-article="${a.id}">수정</button>
+          <button class="btn danger" data-delete-article="${a.id}">삭제</button>
+        </div>
+      </div>
+    `).join("") : '<p class="sub">등록된 기사가 없습니다.</p>';
+  }
+
+  function renderVideos() {
+    $("videoList").innerHTML = videos.length ? videos.map(v => `
+      <div class="item">
+        <div class="item-title">${escapeHTML(v.title)}
+          <span class="status ${v.published ? "live" : "draft"}">${v.published ? "공개" : "임시저장"}</span>
+        </div>
+        <div class="meta">ID ${v.id} · ${escapeHTML(v.category || "FANCAM")} · YouTube: ${escapeHTML(v.youtube_id)}</div>
+        <div class="actions">
+          <button class="btn secondary" data-edit-video="${v.id}">수정</button>
+          <button class="btn danger" data-delete-video="${v.id}">삭제</button>
+          <a class="btn secondary" style="text-decoration:none" href="https://www.youtube.com/watch?v=${encodeURIComponent(v.youtube_id)}" target="_blank" rel="noopener">영상 보기</a>
+        </div>
+      </div>
+    `).join("") : '<p class="sub">등록된 영상이 없습니다.</p>';
+  }
+
+  async function refreshArticles() {
+    const data = await api("/api/articles?admin=1");
+    articles = data.articles || [];
+    renderArticles();
+  }
+
+  async function refreshVideos() {
+    const data = await api("/api/videos?admin=1");
+    videos = data.videos || [];
+    renderVideos();
+  }
+
+  async function refreshAll() {
+    showMessage("콘텐츠를 불러오는 중...");
+    try {
+      await Promise.all([refreshArticles(), refreshVideos()]);
+      showMessage("콘텐츠를 불러왔습니다.");
+    } catch (error) {
+      showMessage(error.message, true);
+    }
+  }
+
+  function resetArticle() {
+    $("articleForm").reset();
+    $("articleId").value = "";
+    $("articleFormHeading").textContent = "새 기사 작성";
+  }
+
+  function resetVideo() {
+    $("videoForm").reset();
+    $("videoId").value = "";
+    $("videoFormHeading").textContent = "새 영상 등록";
+  }
+
+  $("articleForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const id = $("articleId").value;
+    const payload = {
+      title: $("articleTitle").value.trim(),
+      slug: $("articleSlug").value.trim(),
+      category: $("articleCategory").value,
+      excerpt: $("articleExcerpt").value,
+      body: $("articleBody").value,
+      thumbnail_url: $("articleThumbnail").value.trim(),
+      published: $("articlePublished").checked
+    };
+
+    try {
+      await api(id ? `/api/articles/${id}` : "/api/articles", {
+        method: id ? "PUT" : "POST",
+        body: JSON.stringify(payload)
+      });
+      resetArticle();
+      await refreshArticles();
+      showMessage(id ? "기사를 수정했습니다." : "기사를 등록했습니다.");
+    } catch (error) {
+      showMessage(error.message, true);
+    }
+  });
+
+  $("videoForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    const id = $("videoId").value;
+    const raw = $("youtubeUrl").value.trim();
+    let youtubeId = raw;
+
+    try {
+      if (raw.includes("youtube.com") || raw.includes("youtu.be")) {
+        const parsed = new URL(raw);
+        if (parsed.hostname === "youtu.be") {
+          youtubeId = parsed.pathname.split("/").filter(Boolean)[0] || "";
+        } else {
+          youtubeId = parsed.searchParams.get("v") ||
+            parsed.pathname.match(/\/(?:embed|shorts|live)\/([^/?]+)/)?.[1] || "";
+        }
+      }
+    } catch {
+      showMessage("유튜브 주소를 확인해 주세요.", true);
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(youtubeId)) {
+      showMessage("유튜브 URL 또는 11자리 영상 ID를 확인해 주세요.", true);
+      return;
+    }
+
+    const payload = {
+      title: $("videoTitle").value.trim(),
+      youtube_id: youtubeId,
+      category: $("videoCategory").value,
+      description: $("videoDescription").value,
+      shoot_date: $("shootDate").value,
+      published: $("videoPublished").checked
+    };
+
+    try {
+      await api(id ? `/api/videos/${id}` : "/api/videos", {
+        method: id ? "PUT" : "POST",
+        body: JSON.stringify(payload)
+      });
+      resetVideo();
+      await refreshVideos();
+      showMessage(id ? "영상을 수정했습니다." : "영상을 등록했습니다.");
+    } catch (error) {
+      showMessage(error.message, true);
+    }
+  });
+
+  $("articleList").addEventListener("click", async event => {
+    const edit = event.target.closest("[data-edit-article]");
+    const del = event.target.closest("[data-delete-article]");
+
+    if (edit) {
+      const a = articles.find(item => String(item.id) === edit.dataset.editArticle);
+      if (!a) return;
+      $("articleId").value = a.id;
+      $("articleTitle").value = a.title || "";
+      $("articleSlug").value = a.slug || "";
+      $("articleCategory").value = a.category || "NEWS";
+      $("articleExcerpt").value = a.excerpt || "";
+      $("articleBody").value = a.body || "";
+      $("articleThumbnail").value = a.thumbnail_url || "";
+      $("articlePublished").checked = Boolean(a.published);
+      $("articleFormHeading").textContent = `기사 수정 · ID ${a.id}`;
+      $("articleForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    if (del && confirm("이 기사를 영구 삭제할까요?")) {
+      try {
+        await api(`/api/articles/${del.dataset.deleteArticle}`, { method: "DELETE" });
+        await refreshArticles();
+        showMessage("기사를 삭제했습니다.");
+      } catch (error) {
+        showMessage(error.message, true);
+      }
+    }
+  });
+
+  $("videoList").addEventListener("click", async event => {
+    const edit = event.target.closest("[data-edit-video]");
+    const del = event.target.closest("[data-delete-video]");
+
+    if (edit) {
+      const v = videos.find(item => String(item.id) === edit.dataset.editVideo);
+      if (!v) return;
+      $("videoId").value = v.id;
+      $("videoTitle").value = v.title || "";
+      $("youtubeUrl").value = v.youtube_id || "";
+      $("videoCategory").value = v.category || "FANCAM";
+      $("videoDescription").value = v.description || "";
+      $("shootDate").value = v.shoot_date || "";
+      $("videoPublished").checked = Boolean(v.published);
+      $("videoFormHeading").textContent = `영상 수정 · ID ${v.id}`;
+      $("videoForm").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    if (del && confirm("이 영상을 영구 삭제할까요?")) {
+      try {
+        await api(`/api/videos/${del.dataset.deleteVideo}`, { method: "DELETE" });
+        await refreshVideos();
+        showMessage("영상을 삭제했습니다.");
+      } catch (error) {
+        showMessage(error.message, true);
+      }
+    }
+  });
+
+  document.querySelectorAll("[data-tab]").forEach(button => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tab;
+      document.querySelectorAll("[data-tab]").forEach(item =>
+        item.classList.toggle("active", item === button)
+      );
+      $("articlesSection").classList.toggle("hidden", tab !== "articles");
+      $("videosSection").classList.toggle("hidden", tab !== "videos");
+      showMessage("");
+    });
+  });
+
+  $("newArticle").addEventListener("click", resetArticle);
+  $("resetArticle").addEventListener("click", resetArticle);
+  $("newVideo").addEventListener("click", resetVideo);
+  $("resetVideo").addEventListener("click", resetVideo);
+  $("refreshArticles").addEventListener("click", () => refreshArticles().then(() => showMessage("기사 목록을 갱신했습니다.")).catch(e => showMessage(e.message, true)));
+  $("refreshVideos").addEventListener("click", () => refreshVideos().then(() => showMessage("영상 목록을 갱신했습니다.")).catch(e => showMessage(e.message, true)));
+  $("logout").addEventListener("click", logout);
+
+  if (password) {
+    setLoggedIn(true);
+    refreshAll();
+  } else {
+    setLoggedIn(false);
+  }
+})();
+</script>
+</body>
+</html>
