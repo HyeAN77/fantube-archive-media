@@ -4,6 +4,70 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    
+    // 자동 사이트맵 생성
+    if (path === "/sitemap.xml" && request.method === "GET") {
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT slug, updated_at
+           FROM articles
+           WHERE published = 1
+           ORDER BY created_at DESC`
+        ).all();
+
+        const escapeXml = (value) =>
+          String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&apos;");
+
+        const urls = [
+          `<url>
+            <loc>https://fantubearchive.com/</loc>
+          </url>`,
+          ...results.map((article) => {
+            const loc =
+              "https://fantubearchive.com/gisa?slug=" +
+              encodeURIComponent(article.slug);
+
+            const lastmod = article.updated_at
+              ? `<lastmod>${escapeXml(
+                  new Date(article.updated_at).toISOString()
+                )}</lastmod>`
+              : "";
+
+            return `<url>
+              <loc>${escapeXml(loc)}</loc>
+              ${lastmod}
+            </url>`;
+          })
+        ];
+
+        const xml =
+          `<?xml version="1.0" encoding="UTF-8"?>\n` +
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+          urls.join("\n") +
+          `\n</urlset>`;
+
+        return new Response(xml, {
+          headers: {
+            "Content-Type": "application/xml; charset=utf-8",
+            "Cache-Control": "public, max-age=300"
+          }
+        });
+      } catch (error) {
+        return new Response("사이트맵 생성에 실패했습니다.", {
+          status: 500,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8"
+          }
+        });
+      }
+    }
+
+    
     if (path === "/api/admin/login" && request.method === "POST") {
       return adminLogin(request, env);
     }
