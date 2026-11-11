@@ -53,5 +53,5 @@ window.FAM_VIDEOS = [
 window.FAM_SETTINGS = {
   email: "peace0602@hotmail.com", // 문의 이메일 입력
   youtube: "https://www.youtube.com/channel/UCF_76U7I7UxadB0O3yLg_dw", // 유튜브 채널 주소 입력
-  social: "https://x.com/Fantube_AtHeart" // SNS 주소 입력
+  social: "https://x.com/FantubeArchive" // SNS 주소 입력
 };
