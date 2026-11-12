@@ -6,7 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>기사 | FANTUBE ARCHIVE MEDIA</title>
-  <meta name="description" content="FANTUBE ARCHIVE MEDIA 기사">
+  <meta name="description" id="meta-description"
+        content="FANTUBE ARCHIVE MEDIA의 K-POP 및 문화·연예 뉴스">
+
+  <!-- 검색엔진 대표 URL -->
+  <link rel="canonical" id="canonical-url"
+        href="https://fantubearchive.com/">
+
+  <!-- 검색 및 공유용 메타데이터 -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="FANTUBE ARCHIVE MEDIA">
+  <meta property="og:title" id="og-title"
+        content="FANTUBE ARCHIVE MEDIA">
+  <meta property="og:description" id="og-description"
+        content="K-POP 및 문화·연예 뉴스">
+  <meta property="og:url" id="og-url"
+        content="https://fantubearchive.com/">
+  <meta property="og:image" id="og-image" content="">
+
+  <meta name="robots" content="index, follow">
 
   <link rel="stylesheet" href="style.css">
 
@@ -122,6 +140,7 @@
 
   <script>
     const API_URL = "/api/articles";
+    const SITE_URL = "https://fantubearchive.com";
 
     const params = new URLSearchParams(window.location.search);
     const slug = params.get("slug");
@@ -135,6 +154,13 @@
     const textElement = document.getElementById("article-text");
     const photoElement = document.getElementById("article-photo");
     const imageElement = document.getElementById("article-image");
+
+    const canonicalElement = document.getElementById("canonical-url");
+    const descriptionElement = document.getElementById("meta-description");
+    const ogTitleElement = document.getElementById("og-title");
+    const ogDescriptionElement = document.getElementById("og-description");
+    const ogUrlElement = document.getElementById("og-url");
+    const ogImageElement = document.getElementById("og-image");
 
     function formatDate(value) {
       if (!value) return "";
@@ -151,6 +177,57 @@
         day: "2-digit",
         timeZone: "Asia/Seoul"
       }).format(date).replace(/\. /g, ".").replace(/\.$/, "");
+    }
+
+    function makeCanonical(article) {
+      const articleSlug = article.slug || slug;
+
+      if (articleSlug) {
+        return SITE_URL + "/gisa?slug=" +
+          encodeURIComponent(articleSlug);
+      }
+
+      if (id) {
+        return SITE_URL + "/gisa?id=" +
+          encodeURIComponent(id);
+      }
+
+      return SITE_URL + "/";
+    }
+
+    function makeDescription(body, title) {
+      const cleanText = String(body || "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (cleanText) {
+        return cleanText.slice(0, 155);
+      }
+
+      return `${title} | FANTUBE ARCHIVE MEDIA`;
+    }
+
+    function updateSEO(article) {
+      const title = article.title || "FANTUBE ARCHIVE MEDIA";
+      const description = makeDescription(article.body, title);
+      const canonical = makeCanonical(article);
+      const imageUrl = String(article.thumbnail_url || "").trim();
+
+      document.title = `${title} | FANTUBE ARCHIVE MEDIA`;
+
+      canonicalElement.href = canonical;
+      descriptionElement.content = description;
+
+      ogTitleElement.content = title;
+      ogDescriptionElement.content = description;
+      ogUrlElement.content = canonical;
+
+      if (imageUrl) {
+        ogImageElement.content = imageUrl;
+      } else {
+        ogImageElement.removeAttribute("content");
+      }
     }
 
     function renderBody(body) {
@@ -181,6 +258,8 @@
         titleElement.textContent = "기사를 찾을 수 없습니다.";
         statusElement.textContent =
           "기사 주소에 slug가 없습니다. 뉴스 목록에서 다시 선택해 주세요.";
+
+        document.querySelector('meta[name="robots"]').content = "noindex, follow";
         return;
       }
 
@@ -203,9 +282,6 @@
         const article = data.article;
 
         titleElement.textContent = article.title || "제목 없음";
-        document.title =
-          `${article.title || "기사"} | FANTUBE ARCHIVE MEDIA`;
-
         categoryElement.textContent = article.category || "NEWS";
 
         metaElement.textContent = [
@@ -213,17 +289,22 @@
           formatDate(article.created_at)
         ].filter(Boolean).join(" · ");
 
+        updateSEO(article);
+
         const imageUrl = String(article.thumbnail_url || "").trim();
 
         if (imageUrl) {
           imageElement.alt = article.title || "기사 사진";
+
           imageElement.onload = () => {
             photoElement.hidden = false;
           };
+
           imageElement.onerror = () => {
             photoElement.hidden = true;
             imageElement.removeAttribute("src");
           };
+
           imageElement.src = imageUrl;
           photoElement.hidden = false;
         } else {
@@ -235,11 +316,15 @@
 
         statusElement.hidden = true;
         contentElement.hidden = false;
+
       } catch (error) {
         console.error("기사 불러오기 실패:", error);
+
         titleElement.textContent = "기사를 불러오지 못했습니다.";
         statusElement.textContent =
           error.message || "잠시 후 다시 시도해 주세요.";
+
+        document.querySelector('meta[name="robots"]').content = "noindex, follow";
       }
     }
 
