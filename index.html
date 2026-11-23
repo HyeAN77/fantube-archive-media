@@ -22,6 +22,7 @@
   <meta name="twitter:title" content="FANTUBE ARCHIVE MEDIA">
   <meta name="twitter:description" content="K-POP & Entertainment News">
   <meta name="twitter:image" content="https://fantubearchive.com/fantube-signature.png">
+
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -33,93 +34,364 @@
     "description":"K-POP과 엔터테인먼트의 주요 소식과 현장의 이야기를 전하는 독립 미디어."
   }
   </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
-    :root{--bg:#090909;--panel:#111;--panel2:#171717;--line:#292929;--text:#f4f4f1;--muted:#929292;--soft:#c8c8c4;--accent:#d8ff45;--max:1280px}
+    :root{
+      --bg:#090909;
+      --panel:#111;
+      --panel2:#171717;
+      --line:#292929;
+      --text:#f4f4f1;
+      --muted:#929292;
+      --soft:#c8c8c4;
+      --accent:#d8ff45;
+      --max:1280px
+    }
+
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth;scroll-padding-top:90px}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:"Manrope","Noto Sans KR",sans-serif;line-height:1.55}
+
+    html{
+      scroll-behavior:smooth;
+      scroll-padding-top:90px
+    }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Manrope","Noto Sans KR",sans-serif;
+      line-height:1.55
+    }
+
     a{color:inherit;text-decoration:none}
     button{font:inherit}
+
     .topline{height:3px;background:var(--accent)}
     .wrap{width:min(var(--max),calc(100% - 64px));margin:auto}
-    .mono,.eyebrow,.section-label,.meta,.category,.nav-en,.footer-small{font-family:"DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
-    .site-header{position:sticky;top:0;z-index:50;background:rgba(9,9,9,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
-    .header-inner{height:82px;display:flex;align-items:center;justify-content:space-between;gap:28px}
-    .brand{display:flex;align-items:center;gap:12px;min-width:245px}
+
+    .mono,.eyebrow,.section-label,.meta,.category,.nav-en,.footer-small{
+      font-family:"DM Mono",monospace;
+      letter-spacing:.08em;
+      text-transform:uppercase
+    }
+
+    .site-header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:rgba(9,9,9,.94);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--line)
+    }
+
+    .header-inner{
+      height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:28px
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:245px
+    }
+
     .brand-mark{width:42px;height:42px;object-fit:contain}
     .brand-main{display:block;font-size:16px;font-weight:900;letter-spacing:-.055em;line-height:1.1}
     .brand-sub{display:block;margin-top:5px;color:#9b9b9b;font:10px "DM Mono",monospace;letter-spacing:.11em}
     .brand-sub i{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin:0 5px 2px}
+
     .desktop-nav{display:flex;align-items:center;gap:clamp(14px,2.1vw,30px)}
     .desktop-nav a{font-size:12px;font-weight:700;color:#bcbcbc;transition:.2s}
     .desktop-nav a:hover,.desktop-nav a.active{color:var(--accent)}
+
     .header-actions{display:flex;align-items:center;gap:12px}
-    .lang-toggle,.menu-toggle{border:1px solid var(--line);background:transparent;color:var(--text);cursor:pointer}
+
+    .lang-toggle,.menu-toggle{
+      border:1px solid var(--line);
+      background:transparent;
+      color:var(--text);
+      cursor:pointer
+    }
+
     .lang-toggle{height:34px;padding:0 12px;font:11px "DM Mono",monospace}
     .menu-toggle{display:none;width:38px;height:38px}
     .menu-toggle span{display:block;width:16px;height:1px;background:#fff;margin:5px auto}
-    .mobile-nav{display:none;border-top:1px solid var(--line);padding:12px 24px 20px}
-    .mobile-nav a{display:block;padding:12px 0;border-bottom:1px solid #202020;font-size:13px}
+
+    .mobile-nav{
+      display:none;
+      border-top:1px solid var(--line);
+      padding:12px 24px 20px
+    }
+
+    .mobile-nav a{
+      display:block;
+      padding:12px 0;
+      border-bottom:1px solid #202020;
+      font-size:13px
+    }
+
     .mobile-nav.open{display:block}
+
     .breaking{border-bottom:1px solid var(--line);background:#101010}
-    .breaking-inner{min-height:42px;display:flex;align-items:center;gap:18px;overflow:hidden}
-    .breaking-label{flex:none;background:var(--accent);color:#090909;padding:5px 9px;font:10px "DM Mono",monospace;font-weight:500}
-    .breaking-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:#c8c8c8}
+
+    .breaking-inner{
+      min-height:42px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      overflow:hidden
+    }
+
+    .breaking-label{
+      flex:none;
+      background:var(--accent);
+      color:#090909;
+      padding:5px 9px;
+      font:10px "DM Mono",monospace;
+      font-weight:500
+    }
+
+    .breaking-text{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:12px;
+      color:#c8c8c8
+    }
+
     .breaking-text a:hover{color:var(--accent)}
+
     .hero{padding:58px 0 46px;border-bottom:1px solid var(--line)}
-    .hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+
+    .hero-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:22px
+    }
+
     .eyebrow{font-size:10px;color:var(--muted)}
     .live-dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:8px;box-shadow:0 0 12px #d8ff4570}
-    .hero-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.8fr);gap:18px}
-    .lead-card{position:relative;min-height:500px;background:#181818;overflow:hidden;isolation:isolate}
-    .lead-card:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(0deg,rgba(0,0,0,.9),rgba(0,0,0,.02) 72%),var(--lead-image,linear-gradient(135deg,#333,#111));background-size:cover;background-position:center;transition:transform .7s}
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.65fr) minmax(280px,.8fr);
+      gap:18px
+    }
+
+    .lead-card{
+      position:relative;
+      min-height:500px;
+      background:#181818;
+      overflow:hidden;
+      isolation:isolate
+    }
+
+    .lead-card:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-2;
+      background:linear-gradient(0deg,rgba(0,0,0,.9),rgba(0,0,0,.02) 72%),var(--lead-image,linear-gradient(135deg,#333,#111));
+      background-size:cover;
+      background-position:center;
+      transition:transform .7s
+    }
+
     .lead-card:hover:before{transform:scale(1.035)}
-    .lead-content{position:absolute;left:clamp(22px,4vw,48px);right:clamp(22px,4vw,48px);bottom:38px}
+
+    .lead-content{
+      position:absolute;
+      left:clamp(22px,4vw,48px);
+      right:clamp(22px,4vw,48px);
+      bottom:38px
+    }
+
     .category{display:inline-block;color:var(--accent);font-size:10px;margin-bottom:12px}
     .lead-title{font-size:clamp(27px,4vw,52px);line-height:1.2;letter-spacing:-.055em;font-weight:800;max-width:850px;margin:0 0 16px}
     .lead-excerpt{max-width:650px;color:#d0d0d0;font-size:13px;margin:0 0 18px}
     .meta{font-size:9px;color:#aaa;letter-spacing:.06em}
+
     .side-stories{display:grid;grid-template-rows:1fr 1fr;gap:18px}
-    .side-story{display:grid;grid-template-columns:42% 1fr;min-height:0;background:var(--panel);border:1px solid var(--line);overflow:hidden}
+
+    .side-story{
+      display:grid;
+      grid-template-columns:42% 1fr;
+      min-height:0;
+      background:var(--panel);
+      border:1px solid var(--line);
+      overflow:hidden
+    }
+
     .story-thumb{background:#202020;min-height:170px;overflow:hidden}
     .story-thumb img{width:100%;height:100%;object-fit:cover;filter:grayscale(45%);transition:.4s}
     .side-story:hover img,.news-card:hover img{filter:grayscale(0);transform:scale(1.04)}
-    .side-story-copy{padding:18px;display:flex;flex-direction:column;justify-content:center}
+
+    .side-story-copy{
+      padding:18px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center
+    }
+
     .side-story-copy h3{font-size:clamp(14px,1.5vw,19px);line-height:1.4;letter-spacing:-.04em;margin:6px 0 12px}
     .side-story-copy p{font-size:11px;color:var(--muted);margin:0}
+
     .section{padding:74px 0;border-bottom:1px solid var(--line)}
-    .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:28px}
+
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:20px;
+      margin-bottom:28px
+    }
+
     .section-label{font-size:10px;color:var(--muted)}
     .section-title{font-size:clamp(30px,4vw,48px);line-height:1;letter-spacing:-.06em;margin:9px 0 0;font-weight:800}
     .section-title .accent{color:var(--accent)}
     .section-desc{color:var(--muted);font-size:12px;margin:0 0 4px}
-    .more-link{display:inline-flex;align-items:center;gap:12px;border-bottom:1px solid #777;padding:0 0 6px;font:10px "DM Mono",monospace;white-space:nowrap}
+
+    .more-link{
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
+      border-bottom:1px solid #777;
+      padding:0 0 6px;
+      font:10px "DM Mono",monospace;
+      white-space:nowrap
+    }
+
     .more-link:hover{color:var(--accent);border-color:var(--accent)}
-    .news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px 20px}
+
+    .news-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:30px 20px
+    }
+
     .news-card{min-width:0}
-    .news-card .news-art{display:block;aspect-ratio:16/10;background:#1c1c1c;overflow:hidden;margin-bottom:15px}
-    .news-card .news-art img{width:100%;height:100%;object-fit:cover;filter:grayscale(45%);transition:.45s}
+
+    .news-card .news-art{
+      display:block;
+      aspect-ratio:16/10;
+      background:#1c1c1c;
+      overflow:hidden;
+      margin-bottom:15px
+    }
+
+    .news-card .news-art img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      filter:grayscale(45%);
+      transition:.45s
+    }
+
     .news-card .category{margin:0 0 7px}
     .news-card h3{font-size:17px;line-height:1.45;letter-spacing:-.04em;margin:0 0 8px}
     .news-card h3 a:hover{color:var(--accent)}
     .news-card .excerpt{font-size:12px;color:var(--muted);line-height:1.65;margin:0 0 11px}
     .news-card .meta{font-size:9px}
+
     .news-loading{grid-column:1/-1;padding:35px 0;color:var(--muted);font-size:13px}
     .news-empty{grid-column:1/-1;padding:45px 20px;border:1px solid var(--line);text-align:center;color:var(--muted);font-size:13px}
-    .topic-strip{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-top:38px}
-    .topic{padding:22px;border-right:1px solid var(--line);min-height:125px;transition:.2s}
+
+    /* 메인 뉴스 페이지네이션 */
+    .news-pagination{
+      display:none;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      margin-top:42px
+    }
+
+    .news-pagination.visible{display:flex}
+
+    .page-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:40px;
+      height:40px;
+      padding:0 12px;
+      border:1px solid var(--line);
+      background:transparent;
+      color:#aaa;
+      font:11px "DM Mono",monospace;
+      cursor:pointer;
+      transition:.2s
+    }
+
+    .page-btn:hover:not(:disabled){
+      border-color:var(--accent);
+      color:var(--accent)
+    }
+
+    .page-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:#090909;
+      font-weight:700
+    }
+
+    .page-btn:disabled{
+      opacity:.3;
+      cursor:not-allowed
+    }
+
+    .page-btn.arrow{min-width:68px}
+
+    .page-status{
+      display:none;
+      color:var(--muted);
+      font:10px "DM Mono",monospace;
+      text-align:center;
+      margin-top:14px
+    }
+
+    .topic-strip{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      border:1px solid var(--line);
+      margin-top:38px
+    }
+
+    .topic{
+      padding:22px;
+      border-right:1px solid var(--line);
+      min-height:125px;
+      transition:.2s
+    }
+
     .topic:last-child{border-right:0}
     .topic:hover{background:var(--panel2)}
     .topic-num{font:10px "DM Mono",monospace;color:var(--accent)}
     .topic strong{display:block;font-size:15px;margin:12px 0 5px}
     .topic small{font:9px "DM Mono",monospace;color:var(--muted)}
+
     .video-section{background:#0d0d0d}
     .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 24px}
-    .filter{background:transparent;border:1px solid var(--line);color:#aaa;padding:9px 13px;font:10px "DM Mono",monospace;cursor:pointer}
+
+    .filter{
+      background:transparent;
+      border:1px solid var(--line);
+      color:#aaa;
+      padding:9px 13px;
+      font:10px "DM Mono",monospace;
+      cursor:pointer
+    }
+
     .filter.active,.filter:hover{background:var(--accent);border-color:var(--accent);color:#080808}
+
     .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
     .video-card{background:var(--panel);border:1px solid var(--line);overflow:hidden}
     .video-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
@@ -127,34 +399,113 @@
     .video-card h3{font-size:13px;line-height:1.45;margin:0 0 7px}
     .video-card p{font:9px "DM Mono",monospace;color:var(--muted);margin:0}
     .archive-note{font-size:11px;color:var(--muted);margin:20px 0 0}
+
     .about-band{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
     .about-band h2{font-size:clamp(28px,4vw,48px);line-height:1.2;letter-spacing:-.06em;margin:0}
     .about-copy p{font-size:13px;color:#bcbcbc;line-height:1.9;margin:0 0 15px}
     .about-copy .muted{font:10px "DM Mono",monospace;color:var(--muted)}
+
     .contact{padding:65px 0;background:var(--accent);color:#090909}
     .contact-inner{display:flex;justify-content:space-between;align-items:end;gap:30px}
     .contact h2{font-size:clamp(32px,5vw,58px);letter-spacing:-.065em;line-height:1.05;margin:12px 0 0}
     .contact p{font-size:12px;max-width:420px}
     .contact .more-link{border-color:#090909}
+
     .site-footer{padding:32px 0 22px}
     .footer-top{display:flex;justify-content:space-between;align-items:center;gap:25px;padding-bottom:28px}
     .footer-links{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;color:#aaa}
     .footer-links a:hover{color:var(--accent)}
     .footer-bottom{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:17px;color:#777;font:9px "DM Mono",monospace}
-    @media(max-width:950px){.desktop-nav{gap:13px}.desktop-nav a{font-size:11px}.brand{min-width:auto}.hero-grid{grid-template-columns:1fr}.lead-card{min-height:440px}.side-stories{grid-template-columns:1fr 1fr;grid-template-rows:auto}.side-story{grid-template-columns:1fr}.story-thumb{height:150px}.side-story-copy{min-height:145px}}
-    @media(max-width:700px){.wrap{width:calc(100% - 36px)}.header-inner{height:70px}.desktop-nav{display:none}.menu-toggle{display:block}.brand-mark{width:36px;height:36px}.brand-main{font-size:14px}.brand-sub{font-size:9px}.hero{padding:35px 0 30px}.hero-grid{gap:12px}.lead-card{min-height:390px}.lead-content{bottom:25px;left:20px;right:20px}.lead-title{font-size:30px}.lead-excerpt{font-size:11px}.side-stories{gap:10px}.side-story{grid-template-columns:1fr}.story-thumb{height:auto;aspect-ratio:16/10;min-height:0}.side-story-copy{padding:12px;min-height:120px}.side-story-copy h3{font-size:13px}.side-story-copy p{font-size:10px}.section{padding:52px 0}.section-head{align-items:start;flex-direction:column;margin-bottom:22px}.section-desc{margin:0}.news-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px}.news-card h3{font-size:14px}.news-card .excerpt{font-size:11px}.topic-strip{grid-template-columns:repeat(2,1fr)}.topic:nth-child(2){border-right:0}.topic:nth-child(-n+2){border-bottom:1px solid var(--line)}.topic{padding:16px;min-height:110px}.video-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.video-card .video-info{padding:10px}.video-card h3{font-size:11px}.about-band{grid-template-columns:1fr;gap:20px}.contact-inner{display:block}.contact p{margin:20px 0}.footer-top{align-items:flex-start;flex-direction:column}.footer-links{gap:13px}.footer-bottom{font-size:8px}}
-    @media(max-width:420px){.news-grid{grid-template-columns:1fr}.side-stories{grid-template-columns:1fr}.side-story{grid-template-columns:38% 1fr}.story-thumb{aspect-ratio:auto;min-height:125px}.side-story-copy{min-height:125px}.video-grid{grid-template-columns:1fr 1fr}.breaking-text{font-size:10px}}
-    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+
+    @media(max-width:950px){
+      .desktop-nav{gap:13px}
+      .desktop-nav a{font-size:11px}
+      .brand{min-width:auto}
+      .hero-grid{grid-template-columns:1fr}
+      .lead-card{min-height:440px}
+      .side-stories{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+      .side-story{grid-template-columns:1fr}
+      .story-thumb{height:150px}
+      .side-story-copy{min-height:145px}
+    }
+
+    @media(max-width:700px){
+      .wrap{width:calc(100% - 36px)}
+      .header-inner{height:70px}
+      .desktop-nav{display:none}
+      .menu-toggle{display:block}
+      .brand-mark{width:36px;height:36px}
+      .brand-main{font-size:14px}
+      .brand-sub{font-size:9px}
+      .hero{padding:35px 0 30px}
+      .hero-grid{gap:12px}
+      .lead-card{min-height:390px}
+      .lead-content{bottom:25px;left:20px;right:20px}
+      .lead-title{font-size:30px}
+      .lead-excerpt{font-size:11px}
+      .side-stories{gap:10px}
+      .side-story{grid-template-columns:1fr}
+      .story-thumb{height:auto;aspect-ratio:16/10;min-height:0}
+      .side-story-copy{padding:12px;min-height:120px}
+      .side-story-copy h3{font-size:13px}
+      .side-story-copy p{font-size:10px}
+      .section{padding:52px 0}
+      .section-head{align-items:start;flex-direction:column;margin-bottom:22px}
+      .section-desc{margin:0}
+      .news-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px}
+      .news-card h3{font-size:14px}
+      .news-card .excerpt{font-size:11px}
+      .news-pagination{gap:6px;margin-top:30px}
+      .page-btn{min-width:38px;height:38px;padding:0 10px}
+      .page-btn.arrow{min-width:58px}
+      .topic-strip{grid-template-columns:repeat(2,1fr)}
+      .topic:nth-child(2){border-right:0}
+      .topic:nth-child(-n+2){border-bottom:1px solid var(--line)}
+      .topic{padding:16px;min-height:110px}
+      .video-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .video-card .video-info{padding:10px}
+      .video-card h3{font-size:11px}
+      .about-band{grid-template-columns:1fr;gap:20px}
+      .contact-inner{display:block}
+      .contact p{margin:20px 0}
+      .footer-top{align-items:flex-start;flex-direction:column}
+      .footer-links{gap:13px}
+      .footer-bottom{font-size:8px}
+    }
+
+    @media(max-width:420px){
+      .news-grid{grid-template-columns:1fr}
+      .side-stories{grid-template-columns:1fr}
+      .side-story{grid-template-columns:38% 1fr}
+      .story-thumb{aspect-ratio:auto;min-height:125px}
+      .side-story-copy{min-height:125px}
+      .video-grid{grid-template-columns:1fr 1fr}
+      .breaking-text{font-size:10px}
+      .news-pagination{gap:5px}
+      .page-btn{min-width:35px;height:36px;padding:0 8px;font-size:10px}
+      .page-btn.arrow{min-width:52px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      *,*:before,*:after{transition:none!important}
+    }
   </style>
 </head>
+
 <body>
   <div class="topline"></div>
+
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="brand" href="/" aria-label="FANTUBE ARCHIVE MEDIA 홈">
         <img class="brand-mark" src="fantube-signature.png" alt="">
-        <span><span class="brand-main">FANTUBE ARCHIVE</span><span class="brand-sub">MEDIA <i></i> INDEPENDENT NEWS</span></span>
+        <span>
+          <span class="brand-main">FANTUBE ARCHIVE</span>
+          <span class="brand-sub">MEDIA <i></i> INDEPENDENT NEWS</span>
+        </span>
       </a>
+
       <nav class="desktop-nav" aria-label="주요 메뉴">
         <a href="#news" data-ko="뉴스" data-en="NEWS">뉴스</a>
         <a href="#topics" data-ko="분야별 소식" data-en="CATEGORIES">분야별 소식</a>
@@ -162,13 +513,21 @@
         <a href="#about" data-ko="매체 소개" data-en="ABOUT">매체 소개</a>
         <a href="#contact" data-ko="제보·문의" data-en="CONTACT">제보·문의</a>
       </nav>
+
       <div class="header-actions">
         <button class="lang-toggle" id="langToggle" type="button" aria-label="언어 전환">EN</button>
-        <button class="menu-toggle" id="menuToggle" type="button" aria-label="메뉴 열기"><span></span><span></span></button>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="메뉴 열기">
+          <span></span><span></span>
+        </button>
       </div>
     </div>
+
     <nav class="mobile-nav" id="mobileNav" aria-label="모바일 메뉴">
-      <a href="#news">뉴스 / NEWS</a><a href="#topics">분야별 소식 / CATEGORIES</a><a href="#video">영상 아카이브 / VIDEO ARCHIVE</a><a href="#about">매체 소개 / ABOUT</a><a href="#contact">제보·문의 / CONTACT</a>
+      <a href="#news">뉴스 / NEWS</a>
+      <a href="#topics">분야별 소식 / CATEGORIES</a>
+      <a href="#video">영상 아카이브 / VIDEO ARCHIVE</a>
+      <a href="#about">매체 소개 / ABOUT</a>
+      <a href="#contact">제보·문의 / CONTACT</a>
     </nav>
   </header>
 
@@ -183,9 +542,13 @@
     <section class="hero">
       <div class="wrap">
         <div class="hero-top">
-          <div class="eyebrow"><span class="live-dot"></span><span data-ko="K-POP & 엔터테인먼트 뉴스" data-en="K-POP & ENTERTAINMENT NEWS">K-POP & 엔터테인먼트 뉴스</span></div>
+          <div class="eyebrow">
+            <span class="live-dot"></span>
+            <span data-ko="K-POP & 엔터테인먼트 뉴스" data-en="K-POP & ENTERTAINMENT NEWS">K-POP & 엔터테인먼트 뉴스</span>
+          </div>
           <div class="eyebrow">SEOUL, KOREA · EST. 2024</div>
         </div>
+
         <div class="hero-grid">
           <article class="lead-card" id="leadCard">
             <div class="lead-content">
@@ -195,12 +558,23 @@
               <div class="meta" id="leadMeta">FANTUBE ARCHIVE MEDIA · NEWS</div>
             </div>
           </article>
+
           <div class="side-stories" id="sideStories">
             <article class="side-story">
-              <div class="story-thumb"></div><div class="side-story-copy"><span class="category">LATEST NEWS</span><h3>최신 기사를 불러오는 중입니다.</h3><p>FANTUBE ARCHIVE MEDIA</p></div>
+              <div class="story-thumb"></div>
+              <div class="side-story-copy">
+                <span class="category">LATEST NEWS</span>
+                <h3>최신 기사를 불러오는 중입니다.</h3>
+                <p>FANTUBE ARCHIVE MEDIA</p>
+              </div>
             </article>
             <article class="side-story">
-              <div class="story-thumb"></div><div class="side-story-copy"><span class="category">LATEST NEWS</span><h3>새로운 소식을 준비하고 있습니다.</h3><p>FANTUBE ARCHIVE MEDIA</p></div>
+              <div class="story-thumb"></div>
+              <div class="side-story-copy">
+                <span class="category">LATEST NEWS</span>
+                <h3>새로운 소식을 준비하고 있습니다.</h3>
+                <p>FANTUBE ARCHIVE MEDIA</p>
+              </div>
             </article>
           </div>
         </div>
@@ -210,24 +584,61 @@
     <section class="section" id="news">
       <div class="wrap">
         <div class="section-head">
-          <div><div class="section-label">01 / NEWS DESK</div><h2 class="section-title">LATEST NEWS<span class="accent">.</span></h2></div>
-          <div><p class="section-desc">K-POP과 엔터테인먼트의 주요 소식을 전합니다.</p><a class="more-link" href="/news-list.html">ALL NEWS ↗</a></div>
+          <div>
+            <div class="section-label">01 / NEWS DESK</div>
+            <h2 class="section-title">LATEST NEWS<span class="accent">.</span></h2>
+          </div>
+          <div>
+            <p class="section-desc">K-POP과 엔터테인먼트의 주요 소식을 전합니다.</p>
+            <a class="more-link" href="/news-list.html">ALL NEWS ↗</a>
+          </div>
         </div>
-        <div class="news-grid" id="newsGrid"><p class="news-loading">기사를 불러오는 중입니다...</p></div>
+
+        <div class="news-grid" id="newsGrid">
+          <p class="news-loading">기사를 불러오는 중입니다...</p>
+        </div>
+
+        <!-- 메인 뉴스 페이지 이동 버튼 -->
+        <nav class="news-pagination" id="newsPagination" aria-label="메인 뉴스 페이지">
+          <button class="page-btn arrow" id="prevPage" type="button">← 이전</button>
+          <div id="pageNumbers" style="display:flex;gap:8px"></div>
+          <button class="page-btn arrow" id="nextPage" type="button">다음 →</button>
+        </nav>
+        <div class="page-status" id="pageStatus" aria-live="polite"></div>
       </div>
     </section>
 
     <section class="section" id="topics">
       <div class="wrap">
         <div class="section-head">
-          <div><div class="section-label">02 / COVERAGE</div><h2 class="section-title">NEWS CATEGORIES<span class="accent">.</span></h2></div>
+          <div>
+            <div class="section-label">02 / COVERAGE</div>
+            <h2 class="section-title">NEWS CATEGORIES<span class="accent">.</span></h2>
+          </div>
           <p class="section-desc">다양한 분야의 K-POP과 엔터테인먼트 소식</p>
         </div>
+
         <div class="topic-strip">
-          <a class="topic" href="/news-list.html?category=K-POP"><span class="topic-num">01</span><strong>K-POP</strong><small>ARTIST / MUSIC / IDOL</small></a>
-          <a class="topic" href="/news-list.html?category=ENTERTAINMENT"><span class="topic-num">02</span><strong>연예·엔터테인먼트</strong><small>PEOPLE / INDUSTRY</small></a>
-          <a class="topic" href="/news-list.html?category=PERFORMANCE"><span class="topic-num">03</span><strong>공연·축제</strong><small>LIVE / FESTIVAL</small></a>
-          <a class="topic" href="/news-list.html?category=CULTURE"><span class="topic-num">04</span><strong>문화·라이프</strong><small>CULTURE / LIFESTYLE</small></a>
+          <a class="topic" href="/news-list.html?category=K-POP">
+            <span class="topic-num">01</span>
+            <strong>K-POP</strong>
+            <small>ARTIST / MUSIC / IDOL</small>
+          </a>
+          <a class="topic" href="/news-list.html?category=ENTERTAINMENT">
+            <span class="topic-num">02</span>
+            <strong>연예·엔터테인먼트</strong>
+            <small>PEOPLE / INDUSTRY</small>
+          </a>
+          <a class="topic" href="/news-list.html?category=PERFORMANCE">
+            <span class="topic-num">03</span>
+            <strong>공연·축제</strong>
+            <small>LIVE / FESTIVAL</small>
+          </a>
+          <a class="topic" href="/news-list.html?category=CULTURE">
+            <span class="topic-num">04</span>
+            <strong>문화·라이프</strong>
+            <small>CULTURE / LIFESTYLE</small>
+          </a>
         </div>
       </div>
     </section>
@@ -235,9 +646,16 @@
     <section class="section video-section" id="video">
       <div class="wrap">
         <div class="section-head">
-          <div><div class="section-label">03 / VIDEO ARCHIVE</div><h2 class="section-title">ON THE SCENE<span class="accent">.</span></h2></div>
-          <div><p class="section-desc">현장의 순간을 영상으로 기록합니다.</p><a class="more-link" href="https://www.youtube.com/" target="_blank" rel="noopener">YOUTUBE ↗</a></div>
+          <div>
+            <div class="section-label">03 / VIDEO ARCHIVE</div>
+            <h2 class="section-title">ON THE SCENE<span class="accent">.</span></h2>
+          </div>
+          <div>
+            <p class="section-desc">현장의 순간을 영상으로 기록합니다.</p>
+            <a class="more-link" href="https://www.youtube.com/" target="_blank" rel="noopener">YOUTUBE ↗</a>
+          </div>
         </div>
+
         <div class="filter-row" id="filterRow" aria-label="영상 분류">
           <button class="filter active" data-filter="ALL" type="button">ALL / 전체</button>
           <button class="filter" data-filter="STAGE" type="button">STAGE CAM</button>
@@ -245,14 +663,20 @@
           <button class="filter" data-filter="FESTIVAL" type="button">FESTIVAL</button>
           <button class="filter" data-filter="OTHER" type="button">OTHER</button>
         </div>
-        <div class="video-grid" id="videoGrid"><p class="news-loading">영상을 불러오는 중입니다...</p></div>
+
+        <div class="video-grid" id="videoGrid">
+          <p class="news-loading">영상을 불러오는 중입니다...</p>
+        </div>
         <p class="archive-note">영상 콘텐츠는 공식 YouTube 채널에서도 확인할 수 있습니다.</p>
       </div>
     </section>
 
     <section class="section" id="about">
       <div class="wrap about-band">
-        <div><div class="section-label">04 / ABOUT US</div><h2>BEYOND THE ARCHIVE.<br>INTO THE SPOTLIGHT.</h2></div>
+        <div>
+          <div class="section-label">04 / ABOUT US</div>
+          <h2>BEYOND THE ARCHIVE.<br>INTO THE SPOTLIGHT.</h2>
+        </div>
         <div class="about-copy">
           <p>FANTUBE ARCHIVE MEDIA는 K-POP과 엔터테인먼트 분야의 다양한 소식과 현장의 이야기를 전하는 독립 미디어입니다. 아티스트와 공연, 축제와 문화 콘텐츠를 취재하고 기록합니다.</p>
           <p class="muted">NEWS · ARTISTS · LIVE · CULTURE · ARCHIVE</p>
@@ -262,8 +686,14 @@
 
     <section class="contact" id="contact">
       <div class="wrap contact-inner">
-        <div><div class="section-label">05 / CONTACT & TIP</div><h2>HAVE A STORY<br>TO SHARE?</h2></div>
-        <div><p>보도자료, 취재 제안, 제보 및 광고·협업 문의를 기다립니다.</p><a class="more-link" id="emailLink" href="mailto:contact@fantubearchive.com">CONTACT THE NEWSROOM ↗</a></div>
+        <div>
+          <div class="section-label">05 / CONTACT & TIP</div>
+          <h2>HAVE A STORY<br>TO SHARE?</h2>
+        </div>
+        <div>
+          <p>보도자료, 취재 제안, 제보 및 광고·협업 문의를 기다립니다.</p>
+          <a class="more-link" id="emailLink" href="mailto:contact@fantubearchive.com">CONTACT THE NEWSROOM ↗</a>
+        </div>
       </div>
     </section>
   </main>
@@ -273,108 +703,419 @@
       <div class="footer-top">
         <a class="brand" href="/">
           <img class="brand-mark" src="fantube-signature.png" alt="">
-          <span><span class="brand-main">FANTUBE ARCHIVE</span><span class="brand-sub">MEDIA <i></i> INDEPENDENT NEWS</span></span>
+          <span>
+            <span class="brand-main">FANTUBE ARCHIVE</span>
+            <span class="brand-sub">MEDIA <i></i> INDEPENDENT NEWS</span>
+          </span>
         </a>
+
         <div class="footer-links">
-          <a href="/about">매체소개</a><a href="/policy">편집방침</a><a href="/correction">정정·반론 안내</a><a href="#contact">제보·문의</a>
+          <a href="/about">매체소개</a>
+          <a href="/policy">편집방침</a>
+          <a href="/correction">정정·반론 안내</a>
+          <a href="#contact">제보·문의</a>
         </div>
       </div>
-      <div class="footer-bottom"><span>© <span id="year"></span> FANTUBE ARCHIVE MEDIA. ALL RIGHTS RESERVED.</span><span>BEYOND THE ARCHIVE / INTO THE SPOTLIGHT</span></div>
+
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> FANTUBE ARCHIVE MEDIA. ALL RIGHTS RESERVED.</span>
+        <span>BEYOND THE ARCHIVE / INTO THE SPOTLIGHT</span>
+      </div>
     </div>
   </footer>
 
   <script src="videos.js"></script>
   <script src="script.js"></script>
+
   <script>
   (() => {
     const $ = (s, root=document) => root.querySelector(s);
+
+    const ARTICLES_PER_PAGE = 6;
+
+    let allArticles = [];
+    let currentPage = 1;
+
     const safeDate = value => {
       if (!value) return "";
       const d = new Date(value);
-      return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("ko-KR",{year:"numeric",month:"2-digit",day:"2-digit"});
+      return Number.isNaN(d.getTime())
+        ? ""
+        : d.toLocaleDateString("ko-KR", {
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit"
+          });
     };
-    // 개별 기사 주소는 현재 정상 작동하는 주소를 유지합니다.
-    const articleUrl = article => "/news.html?slug=" + encodeURIComponent(article.slug || "");
+
+    // 개별 기사 주소: /news/슬러그
+    const articleUrl = article =>
+      "/news/" + encodeURIComponent(article.slug || "");
+
     const imageUrl = value => {
       if (!value) return "";
-      try { const u = new URL(value, location.origin); return ["https:","http:"].includes(u.protocol) ? u.href : ""; }
-      catch (_) { return ""; }
+      try {
+        const u = new URL(value, location.origin);
+        return ["https:","http:"].includes(u.protocol) ? u.href : "";
+      } catch (_) {
+        return "";
+      }
     };
+
     const makeImage = (url, alt) => {
       const img = document.createElement("img");
-      img.src = url; img.alt = alt || ""; img.loading = "lazy";
-      img.onerror = () => { img.style.display = "none"; };
+      img.src = url;
+      img.alt = alt || "";
+      img.loading = "lazy";
+      img.onerror = () => {
+        img.style.display = "none";
+      };
       return img;
     };
+
     const setLead = article => {
       if (!article) return;
+
       const title = article.title || "FANTUBE ARCHIVE MEDIA";
+
       $("#leadTitle").textContent = title;
       $("#leadExcerpt").textContent = article.excerpt || "";
       $("#leadCategory").textContent = article.category || "TOP STORY";
-      $("#leadMeta").textContent = "FANTUBE ARCHIVE MEDIA" + (safeDate(article.created_at || article.published_at || article.date) ? " · " + safeDate(article.created_at || article.published_at || article.date) : "");
+
+      const date = safeDate(
+        article.created_at || article.published_at || article.date
+      );
+
+      $("#leadMeta").textContent =
+        "FANTUBE ARCHIVE MEDIA" + (date ? " · " + date : "");
+
       const img = imageUrl(article.thumbnail_url);
-      if (img) $("#leadCard").style.setProperty("--lead-image", `url("${img.replace(/["\\]/g,"")}")`);
+
+      if (img) {
+        $("#leadCard").style.setProperty(
+          "--lead-image",
+          `url("${img.replace(/["\\]/g,"")}")`
+        );
+      }
+
       $("#leadCard").style.cursor = "pointer";
       $("#leadCard").setAttribute("role","link");
       $("#leadCard").setAttribute("tabindex","0");
-      $("#leadCard").onclick = () => location.href = articleUrl(article);
-      $("#leadCard").onkeydown = e => { if(e.key==="Enter" || e.key===" "){e.preventDefault();location.href=articleUrl(article);} };
+
+      $("#leadCard").onclick = () => {
+        location.href = articleUrl(article);
+      };
+
+      $("#leadCard").onkeydown = e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          location.href = articleUrl(article);
+        }
+      };
     };
-    const makeNewsCard = (article, index) => {
-      const card = document.createElement("article"); card.className = "news-card";
-      const link = document.createElement("a"); link.className = "news-art"; link.href = articleUrl(article); link.setAttribute("aria-label",article.title || "기사 보기");
+
+    const makeNewsCard = article => {
+      const card = document.createElement("article");
+      card.className = "news-card";
+
+      const link = document.createElement("a");
+      link.className = "news-art";
+      link.href = articleUrl(article);
+      link.setAttribute("aria-label", article.title || "기사 보기");
+
       const img = imageUrl(article.thumbnail_url);
-      if (img) link.appendChild(makeImage(img, article.title || ""));
-      else { const placeholder = document.createElement("div"); placeholder.style.cssText="width:100%;height:100%;display:grid;place-items:center;color:#777;font:11px 'DM Mono',monospace"; placeholder.textContent="FANTUBE ARCHIVE"; link.appendChild(placeholder); }
-      const cat = document.createElement("div"); cat.className="category"; cat.textContent=article.category || "NEWS";
-      const h = document.createElement("h3"); const titleLink=document.createElement("a"); titleLink.href=articleUrl(article); titleLink.textContent=article.title || "제목 없음"; h.appendChild(titleLink);
-      const excerpt=document.createElement("p"); excerpt.className="excerpt"; excerpt.textContent=article.excerpt || "";
-      const meta=document.createElement("div"); meta.className="meta"; meta.textContent="FANTUBE ARCHIVE MEDIA"+(safeDate(article.created_at || article.published_at || article.date) ? " · "+safeDate(article.created_at || article.published_at || article.date) : "");
-      card.append(link,cat,h,excerpt,meta); return card;
+
+      if (img) {
+        link.appendChild(makeImage(img, article.title || ""));
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.style.cssText =
+          "width:100%;height:100%;display:grid;place-items:center;color:#777;font:11px 'DM Mono',monospace";
+        placeholder.textContent = "FANTUBE ARCHIVE";
+        link.appendChild(placeholder);
+      }
+
+      const cat = document.createElement("div");
+      cat.className = "category";
+      cat.textContent = article.category || "NEWS";
+
+      const h = document.createElement("h3");
+      const titleLink = document.createElement("a");
+      titleLink.href = articleUrl(article);
+      titleLink.textContent = article.title || "제목 없음";
+      h.appendChild(titleLink);
+
+      const excerpt = document.createElement("p");
+      excerpt.className = "excerpt";
+      excerpt.textContent = article.excerpt || "";
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+
+      const date = safeDate(
+        article.created_at || article.published_at || article.date
+      );
+
+      meta.textContent =
+        "FANTUBE ARCHIVE MEDIA" + (date ? " · " + date : "");
+
+      card.append(link, cat, h, excerpt, meta);
+
+      return card;
     };
+
     const makeSideStory = article => {
-      const a=document.createElement("a"); a.className="side-story"; a.href=articleUrl(article);
-      const thumb=document.createElement("div"); thumb.className="story-thumb";
-      const img=imageUrl(article.thumbnail_url); if(img) thumb.appendChild(makeImage(img,article.title || ""));
-      const copy=document.createElement("div"); copy.className="side-story-copy";
-      const cat=document.createElement("span"); cat.className="category"; cat.textContent=article.category || "LATEST NEWS";
-      const h=document.createElement("h3"); h.textContent=article.title || "제목 없음";
-      const p=document.createElement("p"); p.textContent=safeDate(article.created_at || article.published_at || article.date) || "FANTUBE ARCHIVE MEDIA";
-      copy.append(cat,h,p); a.append(thumb,copy); return a;
+      const a = document.createElement("a");
+      a.className = "side-story";
+      a.href = articleUrl(article);
+
+      const thumb = document.createElement("div");
+      thumb.className = "story-thumb";
+
+      const img = imageUrl(article.thumbnail_url);
+
+      if (img) {
+        thumb.appendChild(makeImage(img, article.title || ""));
+      }
+
+      const copy = document.createElement("div");
+      copy.className = "side-story-copy";
+
+      const cat = document.createElement("span");
+      cat.className = "category";
+      cat.textContent = article.category || "LATEST NEWS";
+
+      const h = document.createElement("h3");
+      h.textContent = article.title || "제목 없음";
+
+      const p = document.createElement("p");
+      p.textContent =
+        safeDate(article.created_at || article.published_at || article.date)
+        || "FANTUBE ARCHIVE MEDIA";
+
+      copy.append(cat, h, p);
+      a.append(thumb, copy);
+
+      return a;
     };
-    async function loadArticles(){
-      const grid=$("#newsGrid");
-      try{
-        const res=await fetch("/api/articles",{headers:{"Accept":"application/json"}});
-        if(!res.ok) throw new Error("기사 API 오류: "+res.status);
-        const data=await res.json();
-        const articles=(Array.isArray(data)?data:(data.articles || [])).filter(a=>a && a.title);
-        grid.replaceChildren();
-        if(!articles.length){grid.innerHTML='<p class="news-empty">현재 공개된 기사가 없습니다.</p>';$("#leadTitle").textContent="새로운 소식을 준비하고 있습니다.";$("#sideStories").innerHTML="";return;}
+
+    // 페이지 번호 생성
+    function renderPagination(totalPages) {
+      const pagination = $("#newsPagination");
+      const pageNumbers = $("#pageNumbers");
+      const prevButton = $("#prevPage");
+      const nextButton = $("#nextPage");
+      const status = $("#pageStatus");
+
+      pageNumbers.replaceChildren();
+
+      // 한 페이지뿐이면 페이지 버튼을 표시하지 않음
+      if (totalPages <= 1) {
+        pagination.classList.remove("visible");
+        status.textContent = "";
+        return;
+      }
+
+      pagination.classList.add("visible");
+
+      prevButton.disabled = currentPage === 1;
+      nextButton.disabled = currentPage === totalPages;
+
+      // 현재 페이지 주변으로 최대 3개 번호 표시
+      let startPage = Math.max(1, currentPage - 1);
+      let endPage = Math.min(totalPages, startPage + 2);
+
+      // 마지막 페이지에 가까우면 앞쪽 번호를 보충
+      startPage = Math.max(1, endPage - 2);
+
+      for (let page = startPage; page <= endPage; page++) {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className =
+          "page-btn" + (page === currentPage ? " active" : "");
+        button.textContent = page;
+        button.setAttribute(
+          "aria-label",
+          page + "페이지"
+        );
+
+        if (page === currentPage) {
+          button.setAttribute("aria-current", "page");
+        }
+
+        button.addEventListener("click", () => {
+          goToPage(page);
+        });
+
+        pageNumbers.appendChild(button);
+      }
+
+      status.textContent =
+        "PAGE " + currentPage + " / " + totalPages;
+    }
+
+    // 선택한 페이지의 기사만 표시
+    function renderNewsPage() {
+      const grid = $("#newsGrid");
+      const totalPages = Math.ceil(
+        allArticles.length / ARTICLES_PER_PAGE
+      );
+
+      if (totalPages > 0 && currentPage > totalPages) {
+        currentPage = totalPages;
+      }
+
+      const startIndex = (currentPage - 1) * ARTICLES_PER_PAGE;
+      const pageArticles = allArticles.slice(
+        startIndex,
+        startIndex + ARTICLES_PER_PAGE
+      );
+
+      grid.replaceChildren();
+
+      if (!pageArticles.length) {
+        grid.innerHTML =
+          '<p class="news-empty">현재 공개된 기사가 없습니다.</p>';
+        renderPagination(0);
+        return;
+      }
+
+      pageArticles.forEach(article => {
+        grid.appendChild(makeNewsCard(article));
+      });
+
+      renderPagination(totalPages);
+    }
+
+    // 페이지 이동
+    function goToPage(page) {
+      const totalPages = Math.ceil(
+        allArticles.length / ARTICLES_PER_PAGE
+      );
+
+      if (page < 1 || page > totalPages || page === currentPage) {
+        return;
+      }
+
+      currentPage = page;
+      renderNewsPage();
+
+      // 페이지 변경 후 뉴스 영역으로 이동
+      $("#news").scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+    }
+
+    async function loadArticles() {
+      const grid = $("#newsGrid");
+
+      try {
+        const res = await fetch("/api/articles", {
+          headers:{"Accept":"application/json"}
+        });
+
+        if (!res.ok) {
+          throw new Error("기사 API 오류: " + res.status);
+        }
+
+        const data = await res.json();
+
+        const articles = (
+          Array.isArray(data) ? data : (data.articles || [])
+        ).filter(a => a && a.title);
+
+        allArticles = articles;
+        currentPage = 1;
+
+        if (!articles.length) {
+          grid.innerHTML =
+            '<p class="news-empty">현재 공개된 기사가 없습니다.</p>';
+
+          $("#leadTitle").textContent =
+            "새로운 소식을 준비하고 있습니다.";
+
+          $("#sideStories").replaceChildren();
+          $("#newsPagination").classList.remove("visible");
+
+          return;
+        }
+
+        // 가장 최신 기사: 메인 대표 기사
         setLead(articles[0]);
-        const sides=articles.slice(1,3);
-        $("#sideStories").replaceChildren(...(sides.length?sides.map(makeSideStory):[]));
-        if(!sides.length) $("#sideStories").style.display="none";
-        articles.slice(0,9).forEach((a,i)=>grid.appendChild(makeNewsCard(a,i)));
-        const ticker=$("#breakingText");
-        ticker.textContent=articles[0].title || "FANTUBE ARCHIVE MEDIA · LATEST NEWS";
-        const tickerLink=document.createElement("a");tickerLink.href=articleUrl(articles[0]);tickerLink.textContent=articles[0].title || "최신 뉴스";ticker.replaceChildren(tickerLink);
-      }catch(err){
-        console.error("기사 불러오기 실패",err);
-        grid.innerHTML='<p class="news-empty">기사를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</p>';
+
+        // 두 번째, 세 번째 기사: 우측 사이드 기사
+        const sides = articles.slice(1, 3);
+
+        $("#sideStories").replaceChildren(
+          ...sides.map(makeSideStory)
+        );
+
+        if (!sides.length) {
+          $("#sideStories").style.display = "none";
+        } else {
+          $("#sideStories").style.display = "";
+        }
+
+        // LATEST NEWS: 6개씩 페이지 표시
+        renderNewsPage();
+
+        // 상단 뉴스 티커
+        const ticker = $("#breakingText");
+        const tickerLink = document.createElement("a");
+
+        tickerLink.href = articleUrl(articles[0]);
+        tickerLink.textContent =
+          articles[0].title || "최신 뉴스";
+
+        ticker.replaceChildren(tickerLink);
+
+      } catch(err) {
+        console.error("기사 불러오기 실패", err);
+
+        grid.innerHTML =
+          '<p class="news-empty">기사를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.</p>';
+
+        $("#newsPagination").classList.remove("visible");
       }
     }
-    $("#year").textContent=new Date().getFullYear();
-    $("#menuToggle")?.addEventListener("click",()=>$("#mobileNav").classList.toggle("open"));
-    $("#mobileNav")?.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>$("#mobileNav").classList.remove("open")));
-    const langButton=$("#langToggle");
-    langButton?.addEventListener("click",()=>{
-      const english=document.documentElement.lang!=="en";
-      document.documentElement.lang=english?"en":"ko";
-      document.querySelectorAll("[data-ko][data-en]").forEach(el=>el.innerHTML=english?el.dataset.en:el.dataset.ko);
-      langButton.textContent=english?"KO":"EN";
+
+    // 페이지 이동 버튼
+    $("#prevPage").addEventListener("click", () => {
+      goToPage(currentPage - 1);
     });
+
+    $("#nextPage").addEventListener("click", () => {
+      goToPage(currentPage + 1);
+    });
+
+    $("#year").textContent = new Date().getFullYear();
+
+    $("#menuToggle")?.addEventListener("click", () => {
+      $("#mobileNav").classList.toggle("open");
+    });
+
+    $("#mobileNav")?.querySelectorAll("a").forEach(a => {
+      a.addEventListener("click", () => {
+        $("#mobileNav").classList.remove("open");
+      });
+    });
+
+    const langButton = $("#langToggle");
+
+    langButton?.addEventListener("click", () => {
+      const english = document.documentElement.lang !== "en";
+
+      document.documentElement.lang = english ? "en" : "ko";
+
+      document.querySelectorAll("[data-ko][data-en]").forEach(el => {
+        el.innerHTML = english ? el.dataset.en : el.dataset.ko;
+      });
+
+      langButton.textContent = english ? "KO" : "EN";
+    });
+
     loadArticles();
   })();
   </script>
