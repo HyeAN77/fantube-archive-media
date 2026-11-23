@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>전체 기사 | FANTUBE ARCHIVE MEDIA</title>
+<meta name="description" content="FANTUBE ARCHIVE MEDIA의 최신 K-POP, 엔터테인먼트, 공연, 문화 뉴스를 확인하세요.">
+<link rel="canonical" href="https://fantubearchive.com/news-list.html">
+<style>
+:root{
+  --bg:#080d18;
+  --panel:#111a2b;
+  --line:#27344b;
+  --text:#f4f7ff;
+  --muted:#9aa9c0;
+  --blue:#5c8dff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,"Malgun Gothic",sans-serif;
+}
+a{color:inherit;text-decoration:none}
+header{
+  border-bottom:1px solid var(--line);
+  background:#0b1220;
+  padding:22px max(20px,calc((100% - 1160px)/2));
+}
+.brand{
+  font-size:21px;
+  font-weight:800;
+  letter-spacing:1.5px;
+}
+.brand span{color:var(--blue)}
+.header-sub{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:7px;
+  letter-spacing:1px;
+}
+main{
+  max-width:1160px;
+  margin:0 auto;
+  padding:45px 20px 70px;
+}
+.page-heading{
+  border-bottom:1px solid var(--line);
+  padding-bottom:25px;
+  margin-bottom:25px;
+}
+.eyebrow{
+  color:var(--blue);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:2px;
+}
+h1{
+  font-size:34px;
+  margin:12px 0 10px;
+  letter-spacing:-1px;
+}
+.description{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+  margin:0;
+}
+.categories{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin:25px 0 30px;
+}
+.categories a{
+  border:1px solid var(--line);
+  color:var(--muted);
+  padding:10px 16px;
+  border-radius:5px;
+  font-size:12px;
+  font-weight:700;
+  transition:.2s;
+}
+.categories a:hover,
+.categories a.active{
+  color:white;
+  background:var(--blue);
+  border-color:var(--blue);
+}
+.list-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+}
+.list-heading h2{
+  font-size:19px;
+  margin:0;
+}
+#articleCount{
+  color:var(--muted);
+  font-size:13px;
+}
+.article-list{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.article-card{
+  display:grid;
+  grid-template-columns:230px 1fr;
+  gap:24px;
+  padding:22px 0;
+  border-bottom:1px solid var(--line);
+  min-width:0;
+}
+.article-card:first-child{
+  border-top:1px solid var(--line);
+}
+.article-image{
+  width:100%;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  background:#172238;
+  border-radius:5px;
+}
+.no-image{
+  width:100%;
+  aspect-ratio:16/10;
+  background:#111a2b;
+  border:1px solid var(--line);
+  border-radius:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#53627a;
+  font-size:12px;
+  letter-spacing:2px;
+}
+.article-info{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:0;
+}
+.article-category{
+  color:var(--blue);
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  margin-bottom:10px;
+}
+.article-title{
+  font-size:21px;
+  line-height:1.5;
+  font-weight:800;
+  margin:0 0 10px;
+  overflow-wrap:anywhere;
+}
+.article-card:hover .article-title{color:#9bbaff}
+.article-excerpt{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.75;
+  margin:0 0 14px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.article-date{
+  color:#71819a;
+  font-size:11px;
+}
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:38px;
+}
+.pagination button{
+  min-width:38px;
+  height:38px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:5px;
+  background:#111a2b;
+  color:var(--muted);
+  cursor:pointer;
+}
+.pagination button:hover,
+.pagination button.active{
+  background:var(--blue);
+  color:white;
+  border-color:var(--blue);
+}
+.pagination button:disabled{
+  opacity:.3;
+  cursor:not-allowed;
+}
+.state-message{
+  padding:65px 15px;
+  text-align:center;
+  color:var(--muted);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  line-height:1.8;
+}
+.back-home{
+  display:inline-block;
+  margin-top:35px;
+  color:var(--muted);
+  font-size:12px;
+}
+.back-home:hover{color:white}
+footer{
+  border-top:1px solid var(--line);
+  text-align:center;
+  padding:25px 15px;
+  color:#71819a;
+  font-size:11px;
+  letter-spacing:1px;
+}
+@media(max-width:650px){
+  header{padding:19px 18px}
+  .brand{font-size:18px}
+  main{padding:30px 18px 55px}
+  h1{font-size:28px}
+  .article-card{
+    grid-template-columns:115px 1fr;
+    gap:13px;
+    padding:17px 0;
+  }
+  .article-title{font-size:15px;line-height:1.45}
+  .article-excerpt{
+    font-size:11px;
+    line-height:1.55;
+    -webkit-line-clamp:2;
+    margin-bottom:8px;
+  }
+  .article-category{font-size:10px;margin-bottom:6px}
+  .article-date{font-size:10px}
+  .categories{gap:6px}
+  .categories a{padding:9px 11px;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="brand">FANTUBE <span>ARCHIVE</span> MEDIA</a>
+  <div class="header-sub">BEYOND THE ARCHIVE · INTO THE SPOTLIGHT</div>
+</header>
+
+<main>
+  <section class="page-heading">
+    <div class="eyebrow">NEWS ARCHIVE</div>
+    <h1>전체 기사</h1>
+    <p class="description">
+      K-POP부터 공연과 문화까지, FANTUBE ARCHIVE MEDIA의 다양한 소식을 전합니다.
+    </p>
+  </section>
+
+  <nav class="categories" aria-label="기사 카테고리">
+    <a href="news-list.html" data-category="ALL">ALL NEWS</a>
+    <a href="news-list.html?category=K-POP" data-category="K-POP">K-POP</a>
+    <a href="news-list.html?category=ENTERTAINMENT" data-category="ENTERTAINMENT">ENTERTAINMENT</a>
+    <a href="news-list.html?category=PERFORMANCE" data-category="PERFORMANCE">PERFORMANCE</a>
+    <a href="news-list.html?category=CULTURE" data-category="CULTURE">CULTURE</a>
+  </nav>
+
+  <section>
+    <div class="list-heading">
+      <h2 id="listTitle">LATEST NEWS</h2>
+      <span id="articleCount"></span>
+    </div>
+
+    <div id="articleList" class="article-list">
+      <div class="state-message">기사를 불러오는 중입니다.</div>
+    </div>
+
+    <nav id="pagination" class="pagination" aria-label="기사 페이지 이동"></nav>
+  </section>
+
+  <a href="/" class="back-home">← BACK TO HOME</a>
+</main>
+
+<footer>FANTUBE ARCHIVE MEDIA · ALL RIGHTS RESERVED</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const API_URL = "/api/articles";
+  const ARTICLE_URL = "/news.html?slug=";
+  const PAGE_SIZE = 6;
+
+  const params = new URLSearchParams(location.search);
+  const selectedCategory = (params.get("category") || "ALL").toUpperCase();
+  let currentPage = Math.max(1, parseInt(params.get("page") || "1", 10));
+  let allArticles = [];
+
+  const $ = id => document.getElementById(id);
+
+  const legacyMap = {
+    ARTIST: "K-POP",
+    EVENT: "PERFORMANCE",
+    NEWS: "ENTERTAINMENT",
+    INTERVIEW: "ENTERTAINMENT",
+    FANTUBE: "CULTURE"
+  };
+
+  function normalizeCategory(category) {
+    const value = String(category || "").trim().toUpperCase();
+    if (["K-POP","ENTERTAINMENT","PERFORMANCE","CULTURE"].includes(value)) {
+      return value;
+    }
+    return legacyMap[value] || "ENTERTAINMENT";
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    })[char]);
+  }
+
+  function formatDate(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return new Intl.DateTimeFormat("ko-KR", {
+      year:"numeric",
+      month:"2-digit",
+      day:"2-digit"
+    }).format(date);
+  }
+
+  function articleLink(article) {
+    return ARTICLE_URL + encodeURIComponent(article.slug || "");
+  }
+
+  function renderCategories() {
+    document.querySelectorAll("[data-category]").forEach(link => {
+      const category = link.dataset.category;
+      link.classList.toggle("active", category === selectedCategory);
+    });
+
+    const names = {
+      ALL:"LATEST NEWS",
+      "K-POP":"K-POP",
+      ENTERTAINMENT:"ENTERTAINMENT",
+      PERFORMANCE:"PERFORMANCE",
+      CULTURE:"CULTURE"
+    };
+
+    $("listTitle").textContent = names[selectedCategory] || "LATEST NEWS";
+  }
+
+  function renderArticles() {
+    const filtered = selectedCategory === "ALL"
+      ? allArticles
+      : allArticles.filter(article =>
+          normalizeCategory(article.category) === selectedCategory
+        );
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    $("articleCount").textContent = `${filtered.length} ARTICLES`;
+
+    if (!filtered.length) {
+      $("articleList").innerHTML =
+        '<div class="state-message">등록된 기사가 없습니다.</div>';
+      $("pagination").innerHTML = "";
+      return;
+    }
+
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const pageArticles = filtered.slice(start, start + PAGE_SIZE);
+
+    $("articleList").innerHTML = pageArticles.map(article => {
+      const title = escapeHTML(article.title);
+      const excerpt = escapeHTML(article.excerpt || "");
+      const category = escapeHTML(normalizeCategory(article.category));
+      const date = escapeHTML(formatDate(article.created_at));
+      const link = escapeHTML(articleLink(article));
+      const image = article.thumbnail_url
+        ? `<img class="article-image" src="${escapeHTML(article.thumbnail_url)}" alt="${title}" loading="lazy">`
+        : '<div class="no-image">FANTUBE ARCHIVE</div>';
+
+      return `
+        <a class="article-card" href="${link}">
+          ${image}
+          <div class="article-info">
+            <div class="article-category">${category}</div>
+            <h3 class="article-title">${title}</h3>
+            ${excerpt ? `<p class="article-excerpt">${excerpt}</p>` : ""}
+            <div class="article-date">${date}</div>
+          </div>
+        </a>
+      `;
+    }).join("");
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const container = $("pagination");
+
+    if (totalPages <= 1) {
+      container.innerHTML = "";
+      return;
+    }
+
+    let html = `
+      <button type="button" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>
+        이전
+      </button>
+    `;
+
+    for (let page = 1; page <= totalPages; page++) {
+      html += `
+        <button type="button"
+          data-page="${page}"
+          class="${page === currentPage ? "active" : ""}">
+          ${page}
+        </button>
+      `;
+    }
+
+    html += `
+      <button type="button" data-page="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>
+        다음
+      </button>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  function changePage(page) {
+    const filtered = selectedCategory === "ALL"
+      ? allArticles
+      : allArticles.filter(article =>
+          normalizeCategory(article.category) === selectedCategory
+        );
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+    if (page < 1 || page > totalPages) return;
+
+    currentPage = page;
+
+    const nextParams = new URLSearchParams();
+    if (selectedCategory !== "ALL") {
+      nextParams.set("category", selectedCategory);
+    }
+    if (currentPage > 1) {
+      nextParams.set("page", String(currentPage));
+    }
+
+    const query = nextParams.toString();
+    history.pushState({}, "", location.pathname + (query ? "?" + query : ""));
+    renderArticles();
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  $("pagination").addEventListener("click", event => {
+    const button = event.target.closest("[data-page]");
+    if (!button || button.disabled) return;
+    changePage(Number(button.dataset.page));
+  });
+
+  window.addEventListener("popstate", () => {
+    const updated = new URLSearchParams(location.search);
+    const category = (updated.get("category") || "ALL").toUpperCase();
+
+    if (category !== selectedCategory) {
+      location.reload();
+      return;
+    }
+
+    currentPage = Math.max(1, parseInt(updated.get("page") || "1", 10));
+    renderArticles();
+  });
+
+  async function loadArticles() {
+    try {
+      const response = await fetch(API_URL, {
+        headers: { "Accept":"application/json" },
+        cache:"no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error("기사 목록을 불러오지 못했습니다.");
+      }
+
+      const data = await response.json();
+      allArticles = (Array.isArray(data) ? data : data.articles || [])
+        .filter(article => article && article.title)
+        .sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+      renderCategories();
+      renderArticles();
+
+    } catch (error) {
+      $("articleList").innerHTML =
+        '<div class="state-message">기사를 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.</div>';
+      $("articleCount").textContent = "";
+      $("pagination").innerHTML = "";
+      console.error(error);
+    }
+  }
+
+  renderCategories();
+  loadArticles();
+})();
+</script>
+</body>
+</html>
