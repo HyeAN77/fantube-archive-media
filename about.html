@@ -1,0 +1,303 @@
+
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <title>매체소개 | FANTUBE ARCHIVE MEDIA</title>
+  <meta name="description" content="FANTUBE ARCHIVE MEDIA의 설립 목적과 매체 운영 방향을 소개합니다.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://fantubearchive.com/about.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:#090909;
+      --panel:#111;
+      --line:#292929;
+      --text:#f4f4f1;
+      --muted:#929292;
+      --accent:#d8ff45;
+      --max:1000px;
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Manrope","Noto Sans KR",sans-serif;
+      line-height:1.7;
+    }
+
+    a { color:inherit; text-decoration:none; }
+
+    .topline { height:3px; background:var(--accent); }
+
+    .wrap {
+      width:min(var(--max),calc(100% - 48px));
+      margin:auto;
+    }
+
+    .mono {
+      font-family:"DM Mono",monospace;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    header {
+      border-bottom:1px solid var(--line);
+    }
+
+    .header-inner {
+      height:82px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .brand img {
+      width:42px;
+      height:42px;
+      object-fit:contain;
+    }
+
+    .brand-main {
+      display:block;
+      font-size:16px;
+      font-weight:900;
+      letter-spacing:-.055em;
+      line-height:1.1;
+    }
+
+    .brand-sub {
+      display:block;
+      margin-top:5px;
+      color:#999;
+      font:10px "DM Mono",monospace;
+      letter-spacing:.1em;
+    }
+
+    .home-link {
+      color:#aaa;
+      font:11px "DM Mono",monospace;
+      border-bottom:1px solid #666;
+      padding-bottom:5px;
+    }
+
+    .home-link:hover { color:var(--accent); border-color:var(--accent); }
+
+    main { padding:75px 0 100px; }
+
+    .eyebrow {
+      color:var(--accent);
+      font:11px "DM Mono",monospace;
+      letter-spacing:.12em;
+    }
+
+    h1 {
+      font-size:clamp(38px,7vw,68px);
+      line-height:1.1;
+      letter-spacing:-.065em;
+      margin:18px 0 20px;
+    }
+
+    .intro {
+      max-width:720px;
+      color:#bbb;
+      font-size:16px;
+      line-height:1.9;
+      margin-bottom:65px;
+    }
+
+    .content-section {
+      padding:32px 0;
+      border-top:1px solid var(--line);
+    }
+
+    .content-section h2 {
+      font-size:22px;
+      letter-spacing:-.04em;
+      margin:0 0 18px;
+    }
+
+    .content-section p {
+      color:#bcbcbc;
+      font-size:14px;
+      line-height:2;
+      margin:0 0 14px;
+      word-break:keep-all;
+    }
+
+    .keywords {
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+      margin-top:25px;
+    }
+
+    .keywords span {
+      border:1px solid var(--line);
+      padding:8px 12px;
+      color:#aaa;
+      font:10px "DM Mono",monospace;
+    }
+
+    .contact-box {
+      margin-top:35px;
+      padding:25px;
+      background:var(--panel);
+      border:1px solid var(--line);
+    }
+
+    .contact-box strong {
+      display:block;
+      font-size:15px;
+      margin-bottom:8px;
+    }
+
+    .contact-box a {
+      color:var(--accent);
+      font-size:14px;
+    }
+
+    footer {
+      border-top:1px solid var(--line);
+      padding:25px 0;
+    }
+
+    .footer-inner {
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      color:#777;
+      font:9px "DM Mono",monospace;
+    }
+
+    @media(max-width:600px) {
+      .wrap { width:calc(100% - 36px); }
+      .header-inner { height:70px; }
+      .brand img { width:36px; height:36px; }
+      .brand-main { font-size:13px; }
+      .brand-sub { font-size:8px; }
+      main { padding:52px 0 70px; }
+      .intro { font-size:14px; margin-bottom:45px; }
+      .content-section { padding:25px 0; }
+      .content-section h2 { font-size:19px; }
+      .content-section p { font-size:13px; }
+      .footer-inner { flex-direction:column; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topline"></div>
+
+  <header>
+    <div class="wrap header-inner">
+      <a class="brand" href="/" aria-label="홈으로">
+        <img src="/fantube-signature.png" alt="">
+        <span>
+          <span class="brand-main">FANTUBE ARCHIVE</span>
+          <span class="brand-sub">MEDIA · INDEPENDENT NEWS</span>
+        </span>
+      </a>
+      <a class="home-link" href="/">← HOME</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="eyebrow">ABOUT US / 01</div>
+    <h1>ABOUT<br>FANTUBE ARCHIVE.</h1>
+
+    <p class="intro">
+      FANTUBE ARCHIVE MEDIA는 K-POP과 엔터테인먼트 분야의 다양한 소식과
+      현장의 이야기를 전하는 독립 미디어입니다.
+      아티스트와 음악, 공연과 축제, 문화 콘텐츠를 취재하고 기록하며
+      대중문화의 순간들을 아카이브합니다.
+    </p>
+
+    <section class="content-section">
+      <h2>매체 소개</h2>
+      <p>
+        FANTUBE ARCHIVE MEDIA는 빠르게 변화하는 K-POP과 엔터테인먼트
+        산업의 다양한 소식을 전달하고, 아티스트와 대중문화 현장에서
+        만들어지는 순간들을 기록하기 위해 운영됩니다.
+      </p>
+      <p>
+        단순한 소식 전달을 넘어 공연과 페스티벌, 음악과 문화 콘텐츠 등
+        다양한 현장을 조명하고 관련 정보를 독자에게 전달하는 것을
+        목표로 합니다.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>보도 분야</h2>
+      <p>
+        K-POP 아티스트와 음악, 연예·엔터테인먼트 산업, 공연과 축제,
+        문화 및 라이프스타일 등 대중문화와 관련된 다양한 분야를 다룹니다.
+      </p>
+
+      <div class="keywords">
+        <span>K-POP</span>
+        <span>ENTERTAINMENT</span>
+        <span>ARTISTS</span>
+        <span>PERFORMANCE</span>
+        <span>FESTIVAL</span>
+        <span>CULTURE</span>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>운영 방향</h2>
+      <p>
+        정확한 정보 전달과 책임 있는 보도를 중요하게 생각합니다.
+        확인 가능한 자료와 사실을 바탕으로 콘텐츠를 제작하며,
+        독자의 알 권리와 취재 대상의 권리를 함께 존중합니다.
+      </p>
+      <p>
+        기사와 콘텐츠에 오류가 있거나 보완이 필요한 경우에는
+        독자의 의견을 확인하고 합리적인 절차에 따라 검토하겠습니다.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>독자와의 소통</h2>
+      <p>
+        기사 제보와 보도자료, 취재 제안 및 기타 의견을 언제든지
+        보내주실 수 있습니다. 접수된 내용은 확인 후 관련 업무에
+        참고하겠습니다.
+      </p>
+
+      <div class="contact-box">
+        <strong>FANTUBE ARCHIVE MEDIA</strong>
+        <a href="mailto:contact@fantubearchive.com">
+          contact@fantubearchive.com
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
+      <span>© <span id="year"></span> FANTUBE ARCHIVE MEDIA. ALL RIGHTS RESERVED.</span>
+      <span>BEYOND THE ARCHIVE / INTO THE SPOTLIGHT</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
