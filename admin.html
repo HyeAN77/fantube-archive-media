@@ -104,12 +104,17 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
             <div class="field">
               <label for="articleCategory">카테고리</label>
               <select id="articleCategory">
-                <option value="NEWS">NEWS</option>
-                <option value="ARTIST">ARTIST</option>
-                <option value="EVENT">EVENT</option>
-                <option value="INTERVIEW">INTERVIEW</option>
-                <option value="FANtube">FANtube</option>
+                <option value="K-POP">K-POP</option>
+                <option value="ENTERTAINMENT">ENTERTAINMENT</option>
+                <option value="PERFORMANCE">PERFORMANCE</option>
+                <option value="CULTURE">CULTURE</option>
               </select>
+              <p class="meta" style="margin-top:8px">
+                K-POP · 가수/아이돌 소식 /
+                ENTERTAINMENT · 연예계/인터뷰 /
+                PERFORMANCE · 콘서트/축제/공연 /
+                CULTURE · 문화 및 기타 소식
+              </p>
             </div>
             <div class="field">
               <label for="articleSlug">기사 주소용 슬러그 (선택)</label>
@@ -226,6 +231,31 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     })[char]);
   }
 
+  // 기존에 사용하던 기사 카테고리를 새 분류 체계로 연결합니다.
+  // 실제 데이터베이스 값은 해당 기사를 저장할 때 새 값으로 갱신됩니다.
+  function normalizeArticleCategory(category) {
+    const value = String(category || "").trim().toUpperCase();
+
+    const legacyMap = {
+      "ARTIST": "K-POP",
+      "EVENT": "PERFORMANCE",
+      "NEWS": "ENTERTAINMENT",
+      "INTERVIEW": "ENTERTAINMENT",
+      "FANTUBE": "CULTURE"
+    };
+
+    if (["K-POP", "ENTERTAINMENT", "PERFORMANCE", "CULTURE"].includes(value)) {
+      return value;
+    }
+
+    return legacyMap[value] || "ENTERTAINMENT";
+  }
+
+  function articleCategoryLabel(category) {
+    const normalized = normalizeArticleCategory(category);
+    return normalized;
+  }
+
   function showMessage(text, error = false) {
     $("message").textContent = text;
     $("message").classList.toggle("error", error);
@@ -298,7 +328,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
         <div class="item-title">${escapeHTML(a.title)}
           <span class="status ${a.published ? "live" : "draft"}">${a.published ? "공개" : "임시저장"}</span>
         </div>
-        <div class="meta">ID ${a.id} · ${escapeHTML(a.category || "NEWS")} · ${escapeHTML(a.created_at || "")}</div>
+        <div class="meta">ID ${a.id} · ${escapeHTML(articleCategoryLabel(a.category))} · ${escapeHTML(a.created_at || "")}</div>
         <div class="actions">
           <button class="btn secondary" data-edit-article="${a.id}">수정</button>
           <button class="btn danger" data-delete-article="${a.id}">삭제</button>
@@ -441,7 +471,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       $("articleId").value = a.id;
       $("articleTitle").value = a.title || "";
       $("articleSlug").value = a.slug || "";
-      $("articleCategory").value = a.category || "NEWS";
+      $("articleCategory").value = normalizeArticleCategory(a.category);
       $("articleExcerpt").value = a.excerpt || "";
       $("articleBody").value = a.body || "";
       $("articleThumbnail").value = a.thumbnail_url || "";
