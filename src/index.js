@@ -1,10 +1,12 @@
 
+const R2_PUBLIC_URL =
+  "https://pub-e9c532cb28494ea287fa99ff9e9c693d.r2.dev";
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    
     // 자동 사이트맵 생성
     if (path === "/sitemap.xml" && request.method === "GET") {
       try {
@@ -58,6 +60,8 @@ export default {
           }
         });
       } catch (error) {
+        console.error("사이트맵 생성 오류:", error);
+
         return new Response("사이트맵 생성에 실패했습니다.", {
           status: 500,
           headers: {
@@ -67,15 +71,22 @@ export default {
       }
     }
 
-    
+    // 관리자 로그인
     if (path === "/api/admin/login" && request.method === "POST") {
       return adminLogin(request, env);
     }
 
+    // 관리자 이미지 업로드
+    if (path === "/api/admin/upload-image") {
+      return handleImageUpload(request, env);
+    }
+
+    // 기사 API
     if (path === "/api/articles" || path.startsWith("/api/articles/")) {
       return handleArticles(request, env, url);
     }
 
+    // 영상 API
     if (path === "/api/videos" || path.startsWith("/api/videos/")) {
       return handleVideos(request, env, url);
     }
@@ -125,6 +136,100 @@ function isAdmin(request, env) {
   return Boolean(env.ADMIN_PASSWORD && password === env.ADMIN_PASSWORD);
 }
 
+// R2 이미지 업로드
+async function handleImageUpload(request, env) {
+  if (request.method !== "POST") {
+    return json({ error: "지원하지 않는 요청입니다." }, 405);
+  }
+
+  // 관리자 인증
+  if (!isAdmin(request, env)) {
+    return json({ error: "관리자 로그인이 필요합니다." }, 401);
+  }
+
+  // R2 바인딩 확인
+  if (!env.IMAGES) {
+    return json({
+      error: "R2 저장소 바인딩(IMAGES)을 찾을 수 없습니다."
+    }, 500);
+  }
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file");
+
+    if (!file || typeof file.arrayBuffer !== "function") {
+      return json({ error: "업로드할 이미지 파일이 없습니다." }, 400);
+    }
+
+    // 허용 이미지 형식
+    const allowedTypes = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/gif": "gif",
+      "image/avif": "avif"
+    };
+
+    const extension = allowedTypes[file.type];
+
+    if (!extension) {
+      return json({
+        error: "JPG, PNG, WEBP, GIF, AVIF 이미지만 업로드할 수 있습니다."
+      }, 400);
+    }
+
+    // 최대 30MB
+    const maxSize = 30 * 1024 * 1024;
+
+    if (file.size <= 0) {
+      return json({ error: "빈 이미지 파일입니다." }, 400);
+    }
+
+    if (file.size > maxSize) {
+      return json({
+        error: "이미지 파일은 최대 30MB까지 업로드할 수 있습니다."
+      }, 413);
+    }
+
+    // R2 저장 경로
+    const key = `articles/${crypto.randomUUID()}.${extension}`;
+
+    const imageData = await file.arrayBuffer();
+
+    // R2에 이미지 저장
+    await env.IMAGES.put(key, imageData, {
+      httpMetadata: {
+        contentType: file.type,
+        cacheControl: "public, max-age=31536000"
+      },
+      customMetadata: {
+        originalName: String(file.name || "image")
+      }
+    });
+
+    // 공개 이미지 주소 생성
+    const publicBase = String(
+      env.R2_PUBLIC_URL || R2_PUBLIC_URL
+    ).replace(/\/+$/, "");
+
+    const imageUrl = `${publicBase}/${key}`;
+
+    return json({
+      ok: true,
+      url: imageUrl,
+      key
+    });
+
+  } catch (error) {
+    console.error("이미지 업로드 오류:", error);
+
+    return json({
+      error: "이미지 업로드 중 서버 오류가 발생했습니다."
+    }, 500);
+  }
+}
+
 function slugify(value) {
   const slug = String(value || "")
     .trim()
@@ -145,8 +250,6 @@ async function handleArticles(request, env, url) {
 
   if (request.method === "GET") {
     try {
-      
-      // 기사 상세 조회: ID 또는 slug로 기사 한 건 가져오기
       const slug = url.searchParams.get("slug");
 
       if (id || slug) {
@@ -176,8 +279,11 @@ async function handleArticles(request, env, url) {
            ORDER BY created_at DESC`;
 
       const { results } = await env.DB.prepare(query).all();
+
       return json({ articles: results });
-    } catch {
+
+    } catch (error) {
+      console.error("기사 조회 오류:", error);
       return json({ error: "기사 조회에 실패했습니다." }, 500);
     }
   }
@@ -235,7 +341,9 @@ async function handleArticles(request, env, url) {
       }
 
       return json({ ok: true });
-    } catch {
+
+    } catch (error) {
+      console.error("기사 저장 오류:", error);
       return json({ error: "기사 저장에 실패했습니다." }, 500);
     }
   }
@@ -251,7 +359,9 @@ async function handleArticles(request, env, url) {
       }
 
       return json({ ok: true });
-    } catch {
+
+    } catch (error) {
+      console.error("기사 삭제 오류:", error);
       return json({ error: "기사 삭제에 실패했습니다." }, 500);
     }
   }
@@ -279,8 +389,11 @@ async function handleVideos(request, env, url) {
            ORDER BY created_at DESC`;
 
       const { results } = await env.DB.prepare(query).all();
+
       return json({ videos: results });
-    } catch {
+
+    } catch (error) {
+      console.error("영상 조회 오류:", error);
       return json({ error: "영상 조회에 실패했습니다." }, 500);
     }
   }
@@ -344,7 +457,9 @@ async function handleVideos(request, env, url) {
       }
 
       return json({ ok: true });
-    } catch {
+
+    } catch (error) {
+      console.error("영상 저장 오류:", error);
       return json({ error: "영상 저장에 실패했습니다." }, 500);
     }
   }
@@ -360,7 +475,9 @@ async function handleVideos(request, env, url) {
       }
 
       return json({ ok: true });
-    } catch {
+
+    } catch (error) {
+      console.error("영상 삭제 오류:", error);
       return json({ error: "영상 삭제에 실패했습니다." }, 500);
     }
   }
