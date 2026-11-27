@@ -15,5 +15,11 @@
       "database_name": "fantube-db",
       "database_id": "7a9eac9c-5617-4c3c-8706-a5aacd699e9a"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "fantube-images"
+    }
   ]
 }
