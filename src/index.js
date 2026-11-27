@@ -8,8 +8,6 @@ export default {
     const path = url.pathname;
 
     // 자동 사이트맵 생성
-    
-    // 자동 사이트맵 생성
     if (path === "/sitemap.xml" && request.method === "GET") {
       try {
         const { results } = await env.DB.prepare(
@@ -92,6 +90,82 @@ export default {
       }
     }
 
+    // 자동 RSS 피드 생성
+    if (path === "/rss.xml" && request.method === "GET") {
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT title, slug, excerpt, created_at
+           FROM articles
+           WHERE published = 1
+             AND slug IS NOT NULL
+             AND slug != ''
+           ORDER BY created_at DESC
+           LIMIT 50`
+        ).all();
+
+        const escapeXml = (value) =>
+          String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&apos;");
+
+        const items = results.map((article) => {
+          const articleUrl =
+            "https://fantubearchive.com/news?slug=" +
+            encodeURIComponent(article.slug);
+
+          const date = article.created_at
+            ? new Date(article.created_at)
+            : null;
+
+          const pubDate =
+            date && !Number.isNaN(date.getTime())
+              ? `<pubDate>${date.toUTCString()}</pubDate>`
+              : "";
+
+          return `
+            <item>
+              <title>${escapeXml(article.title)}</title>
+              <link>${escapeXml(articleUrl)}</link>
+              <guid isPermaLink="true">${escapeXml(articleUrl)}</guid>
+              <description>${escapeXml(article.excerpt)}</description>
+              ${pubDate}
+            </item>
+          `;
+        });
+
+        const xml =
+          `<?xml version="1.0" encoding="UTF-8"?>\n` +
+          `<rss version="2.0">\n` +
+          `<channel>\n` +
+          `<title>FANTUBE ARCHIVE MEDIA</title>\n` +
+          `<link>https://fantubearchive.com/</link>\n` +
+          `<description>FANTUBE ARCHIVE MEDIA의 최신 K-POP 및 엔터테인먼트 기사</description>\n` +
+          `<language>ko</language>\n` +
+          `<lastBuildDate>${new Date().toUTCString()}</lastBuildDate>\n` +
+          items.join("\n") +
+          `\n</channel>\n</rss>`;
+
+        return new Response(xml, {
+          headers: {
+            "Content-Type": "application/rss+xml; charset=utf-8",
+            "Cache-Control": "public, max-age=300"
+          }
+        });
+
+      } catch (error) {
+        console.error("RSS 생성 오류:", error);
+
+        return new Response("RSS 생성에 실패했습니다.", {
+          status: 500,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8"
+          }
+        });
+      }
+    }
 
     // 관리자 로그인
     if (path === "/api/admin/login" && request.method === "POST") {
@@ -164,12 +238,10 @@ async function handleImageUpload(request, env) {
     return json({ error: "지원하지 않는 요청입니다." }, 405);
   }
 
-  // 관리자 인증
   if (!isAdmin(request, env)) {
     return json({ error: "관리자 로그인이 필요합니다." }, 401);
   }
 
-  // R2 바인딩 확인
   if (!env.IMAGES) {
     return json({
       error: "R2 저장소 바인딩(IMAGES)을 찾을 수 없습니다."
@@ -184,7 +256,6 @@ async function handleImageUpload(request, env) {
       return json({ error: "업로드할 이미지 파일이 없습니다." }, 400);
     }
 
-    // 허용 이미지 형식
     const allowedTypes = {
       "image/jpeg": "jpg",
       "image/png": "png",
@@ -201,7 +272,6 @@ async function handleImageUpload(request, env) {
       }, 400);
     }
 
-    // 최대 30MB
     const maxSize = 30 * 1024 * 1024;
 
     if (file.size <= 0) {
@@ -214,12 +284,9 @@ async function handleImageUpload(request, env) {
       }, 413);
     }
 
-    // R2 저장 경로
     const key = `articles/${crypto.randomUUID()}.${extension}`;
-
     const imageData = await file.arrayBuffer();
 
-    // R2에 이미지 저장
     await env.IMAGES.put(key, imageData, {
       httpMetadata: {
         contentType: file.type,
@@ -230,7 +297,6 @@ async function handleImageUpload(request, env) {
       }
     });
 
-    // 공개 이미지 주소 생성
     const publicBase = String(
       env.R2_PUBLIC_URL || R2_PUBLIC_URL
     ).replace(/\/+$/, "");
