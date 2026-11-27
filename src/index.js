@@ -8,12 +8,16 @@ export default {
     const path = url.pathname;
 
     // 자동 사이트맵 생성
+    
+    // 자동 사이트맵 생성
     if (path === "/sitemap.xml" && request.method === "GET") {
       try {
         const { results } = await env.DB.prepare(
           `SELECT slug, updated_at
            FROM articles
            WHERE published = 1
+             AND slug IS NOT NULL
+             AND slug != ''
            ORDER BY created_at DESC`
         ).all();
 
@@ -25,25 +29,41 @@ export default {
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&apos;");
 
+        const staticUrls = [
+          "https://fantubearchive.com/",
+          "https://fantubearchive.com/news-list.html",
+          "https://fantubearchive.com/about.html",
+          "https://fantubearchive.com/policy.html"
+        ];
+
         const urls = [
-          `<url>
-            <loc>https://fantubearchive.com/</loc>
-          </url>`,
+          ...staticUrls.map((loc) => `
+            <url>
+              <loc>${escapeXml(loc)}</loc>
+            </url>
+          `),
+
           ...results.map((article) => {
             const loc =
-              "https://fantubearchive.com/gisa?slug=" +
+              "https://fantubearchive.com/news?slug=" +
               encodeURIComponent(article.slug);
 
-            const lastmod = article.updated_at
-              ? `<lastmod>${escapeXml(
-                  new Date(article.updated_at).toISOString()
-                )}</lastmod>`
-              : "";
+            let lastmod = "";
 
-            return `<url>
-              <loc>${escapeXml(loc)}</loc>
-              ${lastmod}
-            </url>`;
+            if (article.updated_at) {
+              const date = new Date(article.updated_at);
+
+              if (!Number.isNaN(date.getTime())) {
+                lastmod = `<lastmod>${date.toISOString()}</lastmod>`;
+              }
+            }
+
+            return `
+              <url>
+                <loc>${escapeXml(loc)}</loc>
+                ${lastmod}
+              </url>
+            `;
           })
         ];
 
@@ -59,6 +79,7 @@ export default {
             "Cache-Control": "public, max-age=300"
           }
         });
+
       } catch (error) {
         console.error("사이트맵 생성 오류:", error);
 
@@ -70,6 +91,7 @@ export default {
         });
       }
     }
+
 
     // 관리자 로그인
     if (path === "/api/admin/login" && request.method === "POST") {
