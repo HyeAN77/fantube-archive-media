@@ -750,9 +750,9 @@
           });
     };
 
-    // 개별 기사 주소: /news/슬러그
-    const articleUrl = article =>
-      "/news/" + encodeURIComponent(article.slug || "");
+    // 개별 기사 주소: /news.html?slug=슬러그
+const articleUrl = article =>
+  "/news.html?slug=" + encodeURIComponent(article.slug || "");
 
     const imageUrl = value => {
       if (!value) return "";
