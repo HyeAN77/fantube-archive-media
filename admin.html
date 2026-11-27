@@ -79,6 +79,9 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 .body-upload-status.success{color:var(--green)}
 .body-upload-status.error{color:#ff899b}
 
+/* 사진 삽입 위치 표시점: 화면에는 보이지 않음 */
+.body-caret-marker{display:inline-block;width:0;height:0;overflow:hidden;line-height:0}
+
 @media(max-width:650px){
   main{margin-top:22px}
   .panel{padding:17px}
@@ -323,6 +326,9 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   let videos = [];
   let savedBodyRange = null;
 
+  // 파일 선택 창을 열어도 삽입 위치가 유지되도록 사용하는 임시 표시점
+  const CARET_MARKER_CLASS = "body-caret-marker";
+
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -345,7 +351,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   function showMessage(text, error = false) {
     $("message").textContent = text;
-    $("message").classList.toggle("error", error);
+    $("message").classList.toggle("error",error);
   }
 
   function showUploadStatus(text, type = "") {
@@ -377,9 +383,9 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   }
 
   async function api(path, options = {}) {
-    const response = await fetch(path, {
+    const response = await fetch(path,{
       ...options,
-      headers: {
+      headers:{
         "Content-Type":"application/json",
         "Authorization":`Bearer ${password}`,
         ...(options.headers || {})
@@ -400,9 +406,9 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     if (!password) throw new Error("로그인이 필요합니다.");
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file",file);
 
-    const response = await fetch("/api/admin/upload-image", {
+    const response = await fetch("/api/admin/upload-image",{
       method:"POST",
       headers:{"Authorization":`Bearer ${password}`},
       body:formData
@@ -435,7 +441,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       $("articleThumbnail").value = url;
       showImagePreview(url);
       showUploadStatus("대표 이미지 업로드가 완료되었습니다.","success");
-    } catch (error) {
+    } catch(error) {
       showUploadStatus(error.message,"error");
     } finally {
       button.disabled = false;
@@ -530,31 +536,56 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     }
   }
 
-  // 본문 편집기: 저장 데이터는 HTML이 아닌 안전한 JSON 블록으로 변환
+  // ------------------------------
+  // 본문 편집기
+  // ------------------------------
+
   function makeParagraph(text = "") {
     const p = document.createElement("p");
     p.textContent = text;
     return p;
   }
 
+  function getCaretMarker() {
+    return $("articleBodyEditor").querySelector("." + CARET_MARKER_CLASS);
+  }
+
   function saveEditorSelection() {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
+
     const range = selection.getRangeAt(0);
-    if ($("articleBodyEditor").contains(range.commonAncestorContainer)) {
+    const editor = $("articleBodyEditor");
+
+    if (editor.contains(range.commonAncestorContainer)) {
+      // 사진 삽입용 표시점이 이미 있다면 그 위치를 우선 보존
+      const marker = getCaretMarker();
+      if (marker && marker.isConnected) return;
       savedBodyRange = range.cloneRange();
     }
   }
 
   function restoreEditorSelection() {
     const editor = $("articleBodyEditor");
-    editor.focus();
     const selection = window.getSelection();
+    editor.focus();
+
+    const marker = getCaretMarker();
+    if (marker && marker.isConnected) {
+      const range = document.createRange();
+      range.setStartBefore(marker);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return true;
+    }
+
     if (savedBodyRange && editor.contains(savedBodyRange.commonAncestorContainer)) {
       selection.removeAllRanges();
       selection.addRange(savedBodyRange);
       return true;
     }
+
     const range = document.createRange();
     range.selectNodeContents(editor);
     range.collapse(false);
@@ -563,18 +594,53 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     return false;
   }
 
-  function insertFigureAtCursor(url) {
+  // 현재 커서 위치에 임시 표시점을 심는다.
+  // 파일 선택 창이 열려도 이 표시점은 편집기 안에 남아 있다.
+  function placeCaretMarker() {
     const editor = $("articleBodyEditor");
+    const existing = getCaretMarker();
+
+    if (existing && existing.isConnected) return;
+
     restoreEditorSelection();
 
     const selection = window.getSelection();
-    let range = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
-    if (!range || !editor.contains(range.commonAncestorContainer)) {
+    if (!selection || !selection.rangeCount) return;
+
+    let range = selection.getRangeAt(0).cloneRange();
+
+    if (!editor.contains(range.commonAncestorContainer)) {
       range = document.createRange();
       range.selectNodeContents(editor);
       range.collapse(false);
     }
 
+    // 편집기 바로 아래를 가리키는 경우 문단을 만들어 표시점을 넣는다.
+    if (range.startContainer === editor) {
+      const paragraph = makeParagraph();
+      const offset = range.startOffset;
+      const reference = editor.childNodes[offset] || null;
+      editor.insertBefore(paragraph,reference);
+      paragraph.appendChild(document.createTextNode(""));
+      range = document.createRange();
+      range.selectNodeContents(paragraph);
+      range.collapse(true);
+    }
+
+    range.deleteContents();
+
+    const marker = document.createElement("span");
+    marker.className = CARET_MARKER_CLASS;
+    marker.setAttribute("aria-hidden","true");
+    marker.textContent = "\u200b";
+
+    range.insertNode(marker);
+
+    savedBodyRange = null;
+    selection.removeAllRanges();
+  }
+
+  function makeBodyFigure(url) {
     const figure = document.createElement("figure");
     figure.className = "body-image";
     figure.dataset.bodyImage = "true";
@@ -622,16 +688,54 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     controls.append(up,down,remove);
     figure.append(label,img,caption,controls);
 
-    // 현재 문단의 커서 위치에서 문단을 앞/뒤로 분리해 사진을 독립 블록으로 삽입
+    return figure;
+  }
+
+  // 사진을 현재 표시점 또는 저장된 커서 위치에 삽입한다.
+  function insertFigureAtCursor(url) {
+    const editor = $("articleBodyEditor");
+    const selection = window.getSelection();
+    const figure = makeBodyFigure(url);
+
+    let marker = getCaretMarker();
+    let range;
+
+    if (marker && marker.isConnected) {
+      range = document.createRange();
+      range.setStartBefore(marker);
+      range.collapse(true);
+      marker.remove();
+    } else {
+      restoreEditorSelection();
+      if (selection && selection.rangeCount) {
+        range = selection.getRangeAt(0).cloneRange();
+      } else {
+        range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+      }
+    }
+
+    // 커서가 위치한 편집기 직속 문단을 찾는다.
     let block = range.startContainer.nodeType === Node.TEXT_NODE
       ? range.startContainer.parentElement
       : range.startContainer;
 
-    while (block && block.parentElement !== editor) block = block.parentElement;
+    while (block && block.parentElement !== editor) {
+      block = block.parentElement;
+    }
 
-    if (block && block.parentElement === editor && block.tagName !== "FIGURE") {
+    // 일반 문단 안에 커서가 있는 경우 문단을 앞/뒤로 분리한다.
+    if (block && block.parentElement === editor && block.tagName === "P") {
       const afterRange = range.cloneRange();
-      afterRange.setEndAfter(block.lastChild || block);
+
+      try {
+        afterRange.setEnd(block,block.childNodes.length);
+      } catch {
+        afterRange.selectNodeContents(block);
+        afterRange.setStart(range.startContainer,range.startOffset);
+      }
+
       let remainder = null;
       try {
         remainder = afterRange.extractContents();
@@ -640,46 +744,79 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       }
 
       const after = makeParagraph();
-      if (remainder && remainder.childNodes.length) after.appendChild(remainder);
+      if (remainder && remainder.childNodes.length) {
+        after.appendChild(remainder);
+      }
 
-      if (!block.textContent.trim() && !block.querySelector("br")) {
+      // 기준 노드를 먼저 기억해야 문단 제거 후에도 삽입 위치가 유지된다.
+      const reference = block.nextSibling;
+      const hasBeforeContent = block.textContent.replace(/\u200b/g,"").trim() ||
+        block.querySelector("img,br");
+
+      if (!hasBeforeContent) {
         block.remove();
       }
 
-      const reference = block.parentNode ? block.nextSibling : null;
-      if (reference) editor.insertBefore(figure,reference);
-      else editor.appendChild(figure);
+      editor.insertBefore(figure,reference);
 
-      if (after.textContent.trim() || after.querySelector("*")) {
+      if (after.textContent.replace(/\u200b/g,"").trim() || after.querySelector("*")) {
         editor.insertBefore(after,figure.nextSibling);
       } else {
         editor.insertBefore(makeParagraph(),figure.nextSibling);
       }
     } else {
-      range.insertNode(figure);
-      const after = makeParagraph();
-      if (figure.nextSibling) editor.insertBefore(after,figure.nextSibling);
-      else editor.appendChild(after);
+      // 문단이 아닌 위치에서는 새 문단을 만들어 안전하게 삽입한다.
+      const paragraph = makeParagraph();
+      const reference = block && block.parentElement === editor ? block.nextSibling : null;
+
+      if (block && block.parentElement === editor && block.tagName !== "FIGURE") {
+        editor.insertBefore(figure,reference);
+      } else if (block && block.parentElement === editor && block.tagName === "FIGURE") {
+        editor.insertBefore(figure,block.nextSibling);
+      } else {
+        editor.appendChild(figure);
+      }
+
+      editor.insertBefore(paragraph,figure.nextSibling);
     }
 
-    const next = document.createRange();
+    // 다음 사진이 이어서 들어갈 위치에 새 표시점을 만든다.
     const nextParagraph = figure.nextElementSibling;
-    if (nextParagraph && nextParagraph.tagName === "P") {
-      next.selectNodeContents(nextParagraph);
-      next.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(next);
-      savedBodyRange = next.cloneRange();
+    const targetParagraph = nextParagraph && nextParagraph.tagName === "P"
+      ? nextParagraph
+      : makeParagraph();
+
+    if (!targetParagraph.isConnected) {
+      editor.insertBefore(targetParagraph,figure.nextSibling);
     }
+
+    const nextMarker = document.createElement("span");
+    nextMarker.className = CARET_MARKER_CLASS;
+    nextMarker.setAttribute("aria-hidden","true");
+    nextMarker.textContent = "\u200b";
+    targetParagraph.insertBefore(nextMarker,targetParagraph.firstChild);
+
+    const nextRange = document.createRange();
+    nextRange.setStartBefore(nextMarker);
+    nextRange.collapse(true);
+
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(nextRange);
+    }
+
+    savedBodyRange = null;
   }
 
   function blockToData(node) {
     if (node.nodeType === Node.TEXT_NODE) {
-      const text = node.textContent.replace(/\u00a0/g," ").trim();
+      const text = node.textContent.replace(/\u00a0/g," ").replace(/\u200b/g,"").trim();
       return text ? {type:"text",text} : null;
     }
 
     if (node.nodeType !== Node.ELEMENT_NODE) return null;
+
+    if (node.classList.contains(CARET_MARKER_CLASS)) return null;
 
     if (node.matches("figure[data-body-image]")) {
       const img = node.querySelector("img");
@@ -690,7 +827,9 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       return {type:"image",url,caption};
     }
 
-    const text = node.innerText !== undefined ? node.innerText : node.textContent;
+    const text = (node.innerText !== undefined ? node.innerText : node.textContent)
+      .replace(/\u200b/g,"");
+
     return text.trim() ? {type:"text",text:text.trim()} : null;
   }
 
@@ -713,17 +852,16 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     if (parsed && parsed.version === 1 && Array.isArray(parsed.blocks)) {
       parsed.blocks.forEach(block => {
         if (block.type === "image" && block.url) {
-          insertFigureAtCursor(block.url);
-          const figure = editor.querySelectorAll("figure.body-image");
-          const last = figure[figure.length - 1];
-          const caption = last?.querySelector("[data-caption]");
+          const figure = makeBodyFigure(block.url);
+          const caption = figure.querySelector("[data-caption]");
           if (caption) caption.value = block.caption || "";
+          editor.appendChild(figure);
         } else if (block.type === "text") {
           editor.appendChild(makeParagraph(block.text || ""));
         }
       });
     } else {
-      // 예전 기사: 일반 텍스트 본문을 그대로 문단으로 불러옴
+      // 예전 기사: 일반 텍스트 본문을 문단으로 불러온다.
       String(body || "").replace(/\r\n/g,"\n").split(/\n\s*\n/).forEach(text => {
         if (text.trim()) editor.appendChild(makeParagraph(text));
       });
@@ -732,10 +870,18 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     if (!editor.childNodes.length) editor.appendChild(makeParagraph());
   }
 
+  // 편집기 커서 위치 추적
   $("articleBodyEditor").addEventListener("keyup",saveEditorSelection);
   $("articleBodyEditor").addEventListener("mouseup",saveEditorSelection);
   $("articleBodyEditor").addEventListener("input",saveEditorSelection);
   $("articleBodyEditor").addEventListener("focus",saveEditorSelection);
+  $("articleBodyEditor").addEventListener("pointerup",saveEditorSelection);
+
+  document.addEventListener("selectionchange",() => {
+    const marker = getCaretMarker();
+    if (marker && marker.isConnected) return;
+    saveEditorSelection();
+  });
 
   $("articleBodyEditor").addEventListener("click",event => {
     const button = event.target.closest("[data-image-move],[data-image-remove]");
@@ -758,13 +904,20 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     }
   });
 
+  $("bodyParagraphButton").addEventListener("mousedown",event => {
+    event.preventDefault();
+    saveEditorSelection();
+  });
+
   $("bodyParagraphButton").addEventListener("click",() => {
     const editor = $("articleBodyEditor");
     const p = makeParagraph();
     editor.appendChild(p);
+
     const range = document.createRange();
     range.selectNodeContents(p);
     range.collapse(true);
+
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
@@ -772,23 +925,32 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     editor.focus();
   });
 
-  $("bodyImageButton").addEventListener("click",() => {
+  // 버튼을 누르는 순간 커서 위치를 표시점으로 고정한다.
+  $("bodyImageButton").addEventListener("mousedown",event => {
+    event.preventDefault();
     saveEditorSelection();
+  });
+
+  $("bodyImageButton").addEventListener("click",() => {
+    placeCaretMarker();
     $("bodyImageFile").click();
   });
 
+  // 파일 선택이 완료되면 표시점 위치에 사진을 순서대로 삽입한다.
   $("bodyImageFile").addEventListener("change",async () => {
     const files = Array.from($("bodyImageFile").files || []);
     if (!files.length) return;
 
     const button = $("bodyImageButton");
     button.disabled = true;
+
     let completed = 0;
     const errors = [];
 
     try {
       for (const file of files) {
         showBodyUploadStatus(`본문 사진 업로드 중... (${completed + 1}/${files.length}) ${file.name}`);
+
         try {
           const url = await uploadFileToR2(file);
           insertFigureAtCursor(url);
@@ -804,12 +966,17 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
           completed ? "" : "error"
         );
       } else {
-        showBodyUploadStatus(`${completed}장의 사진을 본문에 삽입했습니다.`,"success");
+        showBodyUploadStatus(`${completed}장의 사진을 본문 커서 위치에 삽입했습니다.`,"success");
       }
     } finally {
       $("bodyImageFile").value = "";
       button.disabled = false;
     }
+  });
+
+  // 파일 선택을 취소한 경우에도 표시점은 남겨 다음 작업에서 위치를 유지한다.
+  $("bodyImageFile").addEventListener("cancel",() => {
+    showBodyUploadStatus("사진 선택이 취소되었습니다.");
   });
 
   function resetArticle() {
