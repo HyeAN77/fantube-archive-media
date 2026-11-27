@@ -50,8 +50,6 @@ textarea{min-height:130px;resize:vertical;line-height:1.65}
 .checkrow{display:flex;align-items:center;gap:10px;margin:12px 0}
 .checkrow input{width:auto}
 footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
-
-/* 이미지 업로드 */
 .upload-box{padding:16px;background:#0a1322;border:1px dashed #40516e;border-radius:10px;margin-bottom:14px}
 .upload-box input[type="file"]{padding:10px;background:#09111f}
 .upload-help{font-size:12px;color:var(--muted);line-height:1.6;margin:9px 0 0}
@@ -61,6 +59,26 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 .upload-status.success{color:var(--green)}
 .upload-status.error{color:#ff899b}
 
+/* 본문 편집기 */
+.editor-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.editor-help{font-size:12px;color:var(--muted);line-height:1.7;margin:0 0 12px}
+.body-editor{min-height:300px;padding:18px;background:#09111f;border:1px solid var(--line);border-radius:9px;line-height:1.9;outline:none;overflow-wrap:anywhere}
+.body-editor:focus{border-color:var(--blue)}
+.body-editor:empty:before{content:"이곳에 기사 본문을 작성하세요.";color:#71819a;pointer-events:none}
+.body-editor p{margin:0 0 15px;min-height:1.5em;white-space:pre-wrap}
+.body-editor figure.body-image{position:relative;margin:22px 0;padding:12px;background:#111a2b;border:1px solid #34435c;border-radius:10px}
+.body-editor figure.body-image img{display:block;width:auto;max-width:100%;max-height:650px;height:auto;margin:0 auto;object-fit:contain}
+.body-editor figure.body-image figcaption{margin-top:10px}
+.body-editor figure.body-image figcaption input{background:#09111f}
+.body-image-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.body-image-actions button{padding:7px 10px;font-size:12px}
+.body-image-label{font-size:11px;color:var(--muted);margin-bottom:8px}
+.body-upload-box{margin-top:12px;padding:14px;background:#0a1322;border:1px dashed #40516e;border-radius:10px}
+.body-upload-box input[type=file]{margin-bottom:8px}
+.body-upload-status{font-size:12px;color:var(--muted);margin-top:8px;white-space:pre-wrap}
+.body-upload-status.success{color:var(--green)}
+.body-upload-status.error{color:#ff899b}
+
 @media(max-width:650px){
   main{margin-top:22px}
   .panel{padding:17px}
@@ -68,6 +86,8 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   .toolbar{align-items:flex-start;flex-direction:column}
   .brand{font-size:17px}
   .upload-box .actions .btn{width:100%}
+  .editor-toolbar .btn{flex:1}
+  .body-editor{padding:13px;min-height:260px}
 }
 </style>
 </head>
@@ -149,37 +169,44 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
           </div>
 
           <div class="field">
-            <label for="articleBody">기사 본문</label>
-            <textarea id="articleBody" style="min-height:240px" placeholder="기사 내용을 입력하세요"></textarea>
+            <label>기사 본문</label>
+            <p class="editor-help">
+              본문을 작성한 뒤 사진을 넣고 싶은 위치에 커서를 놓으세요.
+              사진 업로드 후 해당 위치에 자동으로 삽입됩니다.
+              사진 설명과 순서도 편집할 수 있습니다.
+            </p>
+
+            <div class="editor-toolbar">
+              <button class="btn secondary" type="button" id="bodyImageButton">본문 사진 삽입</button>
+              <button class="btn secondary" type="button" id="bodyParagraphButton">문단 추가</button>
+            </div>
+
+            <div id="articleBodyEditor" class="body-editor" contenteditable="true" role="textbox" aria-multiline="true"></div>
+
+            <div class="body-upload-box">
+              <label for="bodyImageFile">본문에 넣을 사진 선택</label>
+              <input id="bodyImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple>
+              <p class="upload-help">
+                JPG, PNG, WEBP, GIF, AVIF 지원 · 사진 한 장당 최대 30MB<br>
+                여러 장을 선택해 한 번에 업로드할 수 있습니다.
+              </p>
+              <div id="bodyUploadStatus" class="body-upload-status" role="status" aria-live="polite"></div>
+            </div>
           </div>
 
-          <!-- 이미지 업로드 영역 -->
           <div class="field">
             <label>대표 이미지 업로드</label>
-
             <div class="upload-box">
-              <input
-                id="articleImageFile"
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-              >
-
+              <input id="articleImageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif">
               <p class="upload-help">
                 JPG, PNG, WEBP, GIF, AVIF 지원 · 최대 30MB<br>
                 이미지 원본 해상도와 파일 형식을 유지하여 R2에 업로드합니다.
               </p>
-
               <div class="actions">
-                <button class="btn green" id="uploadImageButton" type="button">
-                  R2에 이미지 업로드
-                </button>
-                <button class="btn secondary" id="clearImageButton" type="button">
-                  선택 초기화
-                </button>
+                <button class="btn green" id="uploadImageButton" type="button">R2에 이미지 업로드</button>
+                <button class="btn secondary" id="clearImageButton" type="button">선택 초기화</button>
               </div>
-
               <div id="uploadStatus" class="upload-status" role="status" aria-live="polite"></div>
-
               <div id="imagePreviewWrap" class="image-preview-wrap hidden">
                 <img id="articleImagePreview" class="image-preview" alt="대표 이미지 미리보기">
               </div>
@@ -243,7 +270,6 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
                 <option value="OTHER">OTHER (기타)</option>
               </select>
             </div>
-
             <div class="field">
               <label for="shootDate">촬영 날짜</label>
               <input id="shootDate" type="date">
@@ -287,47 +313,29 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 (() => {
   "use strict";
 
-  const $ = (id) => document.getElementById(id);
+  const $ = id => document.getElementById(id);
   const PASSWORD_KEY = "fantube_admin_password";
   const MAX_IMAGE_SIZE = 30 * 1024 * 1024;
-
-  const ALLOWED_IMAGE_TYPES = [
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "image/gif",
-    "image/avif"
-  ];
+  const ALLOWED_IMAGE_TYPES = ["image/jpeg","image/png","image/webp","image/gif","image/avif"];
 
   let password = sessionStorage.getItem(PASSWORD_KEY) || "";
   let articles = [];
   let videos = [];
+  let savedBodyRange = null;
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     })[char]);
   }
 
   function normalizeArticleCategory(category) {
     const value = String(category || "").trim().toUpperCase();
-
     const legacyMap = {
-      "ARTIST": "K-POP",
-      "EVENT": "PERFORMANCE",
-      "NEWS": "ENTERTAINMENT",
-      "INTERVIEW": "ENTERTAINMENT",
-      "FANTUBE": "CULTURE"
+      "ARTIST":"K-POP","EVENT":"PERFORMANCE","NEWS":"ENTERTAINMENT",
+      "INTERVIEW":"ENTERTAINMENT","FANTUBE":"CULTURE"
     };
-
-    if (["K-POP", "ENTERTAINMENT", "PERFORMANCE", "CULTURE"].includes(value)) {
-      return value;
-    }
-
+    if (["K-POP","ENTERTAINMENT","PERFORMANCE","CULTURE"].includes(value)) return value;
     return legacyMap[value] || "ENTERTAINMENT";
   }
 
@@ -341,31 +349,30 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   }
 
   function showUploadStatus(text, type = "") {
-    const element = $("uploadStatus");
-    element.textContent = text;
-    element.className = "upload-status";
-    if (type) element.classList.add(type);
+    const el = $("uploadStatus");
+    el.textContent = text;
+    el.className = "upload-status" + (type ? " " + type : "");
+  }
+
+  function showBodyUploadStatus(text, type = "") {
+    const el = $("bodyUploadStatus");
+    el.textContent = text;
+    el.className = "body-upload-status" + (type ? " " + type : "");
   }
 
   function showImagePreview(url) {
     const image = $("articleImagePreview");
     const wrap = $("imagePreviewWrap");
-
     if (!url) {
       image.removeAttribute("src");
       wrap.classList.add("hidden");
       return;
     }
-
     image.onerror = () => {
       wrap.classList.add("hidden");
-      showUploadStatus("이미지를 불러오지 못했습니다. 이미지 주소를 확인해 주세요.", "error");
+      showUploadStatus("이미지를 불러오지 못했습니다. 이미지 주소를 확인해 주세요.","error");
     };
-
-    image.onload = () => {
-      wrap.classList.remove("hidden");
-    };
-
+    image.onload = () => wrap.classList.remove("hidden");
     image.src = url;
   }
 
@@ -373,90 +380,63 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     const response = await fetch(path, {
       ...options,
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${password}`,
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${password}`,
         ...(options.headers || {})
       }
     });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      logout();
+      throw new Error(data.error || "로그인이 만료되었습니다. 다시 로그인해 주세요.");
+    }
+    if (!response.ok) throw new Error(data.error || `요청 실패 (${response.status})`);
+    return data;
+  }
 
+  async function uploadFileToR2(file) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error("JPG, PNG, WEBP, GIF, AVIF 파일만 업로드할 수 있습니다.");
+    if (file.size > MAX_IMAGE_SIZE) throw new Error("이미지 파일은 한 장당 최대 30MB까지 업로드할 수 있습니다.");
+    if (!password) throw new Error("로그인이 필요합니다.");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/admin/upload-image", {
+      method:"POST",
+      headers:{"Authorization":`Bearer ${password}`},
+      body:formData
+    });
     const data = await response.json().catch(() => ({}));
 
     if (response.status === 401) {
       logout();
       throw new Error(data.error || "로그인이 만료되었습니다. 다시 로그인해 주세요.");
     }
-
-    if (!response.ok) {
-      throw new Error(data.error || `요청 실패 (${response.status})`);
-    }
-
-    return data;
+    if (!response.ok) throw new Error(data.error || `이미지 업로드 실패 (${response.status})`);
+    if (!data.url) throw new Error("업로드 응답에서 이미지 URL을 받지 못했습니다.");
+    return data.url;
   }
 
-  // R2 이미지 업로드
   async function uploadArticleImage() {
     const file = $("articleImageFile").files[0];
-
     if (!file) {
-      showUploadStatus("먼저 업로드할 이미지 파일을 선택해 주세요.", "error");
-      return;
-    }
-
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      showUploadStatus("JPG, PNG, WEBP, GIF, AVIF 파일만 업로드할 수 있습니다.", "error");
-      return;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE) {
-      showUploadStatus("이미지 파일은 최대 30MB까지 업로드할 수 있습니다.", "error");
-      return;
-    }
-
-    if (!password) {
-      showUploadStatus("로그인이 필요합니다.", "error");
+      showUploadStatus("먼저 업로드할 이미지 파일을 선택해 주세요.","error");
       return;
     }
 
     const button = $("uploadImageButton");
     button.disabled = true;
     button.textContent = "업로드 중...";
-    showUploadStatus("이미지를 R2에 업로드하고 있습니다. 잠시 기다려 주세요.");
+    showUploadStatus("이미지를 R2에 업로드하고 있습니다.");
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // FormData 전송 시 Content-Type을 직접 지정하지 않습니다.
-      // 브라우저가 multipart boundary를 자동으로 설정합니다.
-      const response = await fetch("/api/admin/upload-image", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${password}`
-        },
-        body: formData
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (response.status === 401) {
-        logout();
-        throw new Error(data.error || "로그인이 만료되었습니다. 다시 로그인해 주세요.");
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || `이미지 업로드 실패 (${response.status})`);
-      }
-
-      if (!data.url) {
-        throw new Error("업로드는 응답되었지만 이미지 URL을 받지 못했습니다.");
-      }
-
-      $("articleThumbnail").value = data.url;
-      showImagePreview(data.url);
-      showUploadStatus("이미지 업로드가 완료되었습니다. 대표 이미지 URL에 자동 입력했습니다.", "success");
-
+      const url = await uploadFileToR2(file);
+      $("articleThumbnail").value = url;
+      showImagePreview(url);
+      showUploadStatus("대표 이미지 업로드가 완료되었습니다.","success");
     } catch (error) {
-      showUploadStatus(error.message, "error");
+      showUploadStatus(error.message,"error");
     } finally {
       button.disabled = false;
       button.textContent = "R2에 이미지 업로드";
@@ -464,8 +444,8 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   }
 
   function setLoggedIn(value) {
-    $("loginPanel").classList.toggle("hidden", value);
-    $("dashboard").classList.toggle("hidden", !value);
+    $("loginPanel").classList.toggle("hidden",value);
+    $("dashboard").classList.toggle("hidden",!value);
   }
 
   function logout() {
@@ -475,36 +455,26 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     $("loginMessage").textContent = "";
   }
 
-  $("loginForm").addEventListener("submit", async event => {
+  $("loginForm").addEventListener("submit",async event => {
     event.preventDefault();
-
     const message = $("loginMessage");
     const entered = $("password").value;
-
     message.textContent = "로그인 확인 중...";
-
     try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: entered })
+      const response = await fetch("/api/admin/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password:entered})
       });
-
       const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data.error || "로그인에 실패했습니다.");
-      }
-
+      if (!response.ok) throw new Error(data.error || "로그인에 실패했습니다.");
       password = entered;
-      sessionStorage.setItem(PASSWORD_KEY, password);
+      sessionStorage.setItem(PASSWORD_KEY,password);
       $("password").value = "";
       message.textContent = "";
-
       setLoggedIn(true);
       await refreshAll();
-
-    } catch (error) {
+    } catch(error) {
       message.textContent = error.message;
     }
   });
@@ -512,44 +482,30 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   function renderArticles() {
     $("articleList").innerHTML = articles.length ? articles.map(a => `
       <div class="item">
-        <div class="item-title">
-          ${escapeHTML(a.title)}
-          <span class="status ${a.published ? "live" : "draft"}">
-            ${a.published ? "공개" : "임시저장"}
-          </span>
+        <div class="item-title">${escapeHTML(a.title)}
+          <span class="status ${a.published ? "live":"draft"}">${a.published ? "공개":"임시저장"}</span>
         </div>
-        <div class="meta">
-          ID ${a.id} · ${escapeHTML(articleCategoryLabel(a.category))} · ${escapeHTML(a.created_at || "")}
-        </div>
+        <div class="meta">ID ${a.id} · ${escapeHTML(articleCategoryLabel(a.category))} · ${escapeHTML(a.created_at || "")}</div>
         <div class="actions">
           <button class="btn secondary" data-edit-article="${a.id}">수정</button>
           <button class="btn danger" data-delete-article="${a.id}">삭제</button>
         </div>
-      </div>
-    `).join("") : '<p class="sub">등록된 기사가 없습니다.</p>';
+      </div>`).join("") : '<p class="sub">등록된 기사가 없습니다.</p>';
   }
 
   function renderVideos() {
     $("videoList").innerHTML = videos.length ? videos.map(v => `
       <div class="item">
-        <div class="item-title">
-          ${escapeHTML(v.title)}
-          <span class="status ${v.published ? "live" : "draft"}">
-            ${v.published ? "공개" : "임시저장"}
-          </span>
+        <div class="item-title">${escapeHTML(v.title)}
+          <span class="status ${v.published ? "live":"draft"}">${v.published ? "공개":"임시저장"}</span>
         </div>
-        <div class="meta">
-          ID ${v.id} · ${escapeHTML(v.category || "FANCAM")} · YouTube: ${escapeHTML(v.youtube_id)}
-        </div>
+        <div class="meta">ID ${v.id} · ${escapeHTML(v.category || "FANCAM")} · YouTube: ${escapeHTML(v.youtube_id)}</div>
         <div class="actions">
           <button class="btn secondary" data-edit-video="${v.id}">수정</button>
           <button class="btn danger" data-delete-video="${v.id}">삭제</button>
-          <a class="btn secondary" style="text-decoration:none"
-             href="https://www.youtube.com/watch?v=${encodeURIComponent(v.youtube_id)}"
-             target="_blank" rel="noopener">영상 보기</a>
+          <a class="btn secondary" style="text-decoration:none" href="https://www.youtube.com/watch?v=${encodeURIComponent(v.youtube_id)}" target="_blank" rel="noopener">영상 보기</a>
         </div>
-      </div>
-    `).join("") : '<p class="sub">등록된 영상이 없습니다.</p>';
+      </div>`).join("") : '<p class="sub">등록된 영상이 없습니다.</p>';
   }
 
   async function refreshArticles() {
@@ -566,23 +522,307 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   async function refreshAll() {
     showMessage("콘텐츠를 불러오는 중...");
-
     try {
-      await Promise.all([refreshArticles(), refreshVideos()]);
+      await Promise.all([refreshArticles(),refreshVideos()]);
       showMessage("콘텐츠를 불러왔습니다.");
-    } catch (error) {
-      showMessage(error.message, true);
+    } catch(error) {
+      showMessage(error.message,true);
     }
   }
+
+  // 본문 편집기: 저장 데이터는 HTML이 아닌 안전한 JSON 블록으로 변환
+  function makeParagraph(text = "") {
+    const p = document.createElement("p");
+    p.textContent = text;
+    return p;
+  }
+
+  function saveEditorSelection() {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if ($("articleBodyEditor").contains(range.commonAncestorContainer)) {
+      savedBodyRange = range.cloneRange();
+    }
+  }
+
+  function restoreEditorSelection() {
+    const editor = $("articleBodyEditor");
+    editor.focus();
+    const selection = window.getSelection();
+    if (savedBodyRange && editor.contains(savedBodyRange.commonAncestorContainer)) {
+      selection.removeAllRanges();
+      selection.addRange(savedBodyRange);
+      return true;
+    }
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    return false;
+  }
+
+  function insertFigureAtCursor(url) {
+    const editor = $("articleBodyEditor");
+    restoreEditorSelection();
+
+    const selection = window.getSelection();
+    let range = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
+    if (!range || !editor.contains(range.commonAncestorContainer)) {
+      range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+    }
+
+    const figure = document.createElement("figure");
+    figure.className = "body-image";
+    figure.dataset.bodyImage = "true";
+    figure.contentEditable = "false";
+
+    const label = document.createElement("div");
+    label.className = "body-image-label";
+    label.textContent = "본문 사진";
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = "기사 본문 사진";
+    img.dataset.url = url;
+
+    const caption = document.createElement("figcaption");
+    const captionInput = document.createElement("input");
+    captionInput.type = "text";
+    captionInput.placeholder = "사진 설명을 입력하세요 (선택)";
+    captionInput.setAttribute("aria-label","사진 설명");
+    captionInput.dataset.caption = "true";
+    captionInput.contentEditable = "true";
+    caption.appendChild(captionInput);
+
+    const controls = document.createElement("div");
+    controls.className = "body-image-actions";
+
+    const up = document.createElement("button");
+    up.type = "button";
+    up.className = "btn secondary";
+    up.dataset.imageMove = "up";
+    up.textContent = "위로 이동";
+
+    const down = document.createElement("button");
+    down.type = "button";
+    down.className = "btn secondary";
+    down.dataset.imageMove = "down";
+    down.textContent = "아래로 이동";
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "btn danger";
+    remove.dataset.imageRemove = "true";
+    remove.textContent = "사진 삭제";
+
+    controls.append(up,down,remove);
+    figure.append(label,img,caption,controls);
+
+    // 현재 문단의 커서 위치에서 문단을 앞/뒤로 분리해 사진을 독립 블록으로 삽입
+    let block = range.startContainer.nodeType === Node.TEXT_NODE
+      ? range.startContainer.parentElement
+      : range.startContainer;
+
+    while (block && block.parentElement !== editor) block = block.parentElement;
+
+    if (block && block.parentElement === editor && block.tagName !== "FIGURE") {
+      const afterRange = range.cloneRange();
+      afterRange.setEndAfter(block.lastChild || block);
+      let remainder = null;
+      try {
+        remainder = afterRange.extractContents();
+      } catch {
+        remainder = null;
+      }
+
+      const after = makeParagraph();
+      if (remainder && remainder.childNodes.length) after.appendChild(remainder);
+
+      if (!block.textContent.trim() && !block.querySelector("br")) {
+        block.remove();
+      }
+
+      const reference = block.parentNode ? block.nextSibling : null;
+      if (reference) editor.insertBefore(figure,reference);
+      else editor.appendChild(figure);
+
+      if (after.textContent.trim() || after.querySelector("*")) {
+        editor.insertBefore(after,figure.nextSibling);
+      } else {
+        editor.insertBefore(makeParagraph(),figure.nextSibling);
+      }
+    } else {
+      range.insertNode(figure);
+      const after = makeParagraph();
+      if (figure.nextSibling) editor.insertBefore(after,figure.nextSibling);
+      else editor.appendChild(after);
+    }
+
+    const next = document.createRange();
+    const nextParagraph = figure.nextElementSibling;
+    if (nextParagraph && nextParagraph.tagName === "P") {
+      next.selectNodeContents(nextParagraph);
+      next.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(next);
+      savedBodyRange = next.cloneRange();
+    }
+  }
+
+  function blockToData(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent.replace(/\u00a0/g," ").trim();
+      return text ? {type:"text",text} : null;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return null;
+
+    if (node.matches("figure[data-body-image]")) {
+      const img = node.querySelector("img");
+      if (!img) return null;
+      const url = img.dataset.url || img.getAttribute("src") || "";
+      if (!url) return null;
+      const caption = node.querySelector("[data-caption]")?.value || "";
+      return {type:"image",url,caption};
+    }
+
+    const text = node.innerText !== undefined ? node.innerText : node.textContent;
+    return text.trim() ? {type:"text",text:text.trim()} : null;
+  }
+
+  function serializeBody() {
+    const editor = $("articleBodyEditor");
+    const blocks = Array.from(editor.childNodes).map(blockToData).filter(Boolean);
+    return JSON.stringify({version:1,blocks});
+  }
+
+  function loadBody(body) {
+    const editor = $("articleBodyEditor");
+    editor.innerHTML = "";
+    savedBodyRange = null;
+
+    let parsed = null;
+    try {
+      parsed = JSON.parse(body || "");
+    } catch {}
+
+    if (parsed && parsed.version === 1 && Array.isArray(parsed.blocks)) {
+      parsed.blocks.forEach(block => {
+        if (block.type === "image" && block.url) {
+          insertFigureAtCursor(block.url);
+          const figure = editor.querySelectorAll("figure.body-image");
+          const last = figure[figure.length - 1];
+          const caption = last?.querySelector("[data-caption]");
+          if (caption) caption.value = block.caption || "";
+        } else if (block.type === "text") {
+          editor.appendChild(makeParagraph(block.text || ""));
+        }
+      });
+    } else {
+      // 예전 기사: 일반 텍스트 본문을 그대로 문단으로 불러옴
+      String(body || "").replace(/\r\n/g,"\n").split(/\n\s*\n/).forEach(text => {
+        if (text.trim()) editor.appendChild(makeParagraph(text));
+      });
+    }
+
+    if (!editor.childNodes.length) editor.appendChild(makeParagraph());
+  }
+
+  $("articleBodyEditor").addEventListener("keyup",saveEditorSelection);
+  $("articleBodyEditor").addEventListener("mouseup",saveEditorSelection);
+  $("articleBodyEditor").addEventListener("input",saveEditorSelection);
+  $("articleBodyEditor").addEventListener("focus",saveEditorSelection);
+
+  $("articleBodyEditor").addEventListener("click",event => {
+    const button = event.target.closest("[data-image-move],[data-image-remove]");
+    if (!button) return;
+
+    const figure = button.closest("figure.body-image");
+    if (!figure) return;
+
+    if (button.dataset.imageRemove) {
+      figure.remove();
+      return;
+    }
+
+    if (button.dataset.imageMove === "up") {
+      const previous = figure.previousElementSibling;
+      if (previous) figure.parentNode.insertBefore(figure,previous);
+    } else if (button.dataset.imageMove === "down") {
+      const next = figure.nextElementSibling;
+      if (next) figure.parentNode.insertBefore(next,figure);
+    }
+  });
+
+  $("bodyParagraphButton").addEventListener("click",() => {
+    const editor = $("articleBodyEditor");
+    const p = makeParagraph();
+    editor.appendChild(p);
+    const range = document.createRange();
+    range.selectNodeContents(p);
+    range.collapse(true);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    savedBodyRange = range.cloneRange();
+    editor.focus();
+  });
+
+  $("bodyImageButton").addEventListener("click",() => {
+    saveEditorSelection();
+    $("bodyImageFile").click();
+  });
+
+  $("bodyImageFile").addEventListener("change",async () => {
+    const files = Array.from($("bodyImageFile").files || []);
+    if (!files.length) return;
+
+    const button = $("bodyImageButton");
+    button.disabled = true;
+    let completed = 0;
+    const errors = [];
+
+    try {
+      for (const file of files) {
+        showBodyUploadStatus(`본문 사진 업로드 중... (${completed + 1}/${files.length}) ${file.name}`);
+        try {
+          const url = await uploadFileToR2(file);
+          insertFigureAtCursor(url);
+          completed++;
+        } catch(error) {
+          errors.push(`${file.name}: ${error.message}`);
+        }
+      }
+
+      if (errors.length) {
+        showBodyUploadStatus(
+          `${completed}장 업로드 완료\n실패:\n${errors.join("\n")}`,
+          completed ? "" : "error"
+        );
+      } else {
+        showBodyUploadStatus(`${completed}장의 사진을 본문에 삽입했습니다.`,"success");
+      }
+    } finally {
+      $("bodyImageFile").value = "";
+      button.disabled = false;
+    }
+  });
 
   function resetArticle() {
     $("articleForm").reset();
     $("articleId").value = "";
     $("articleFormHeading").textContent = "새 기사 작성";
     $("articleImageFile").value = "";
+    $("bodyImageFile").value = "";
     $("uploadStatus").textContent = "";
     $("uploadStatus").className = "upload-status";
+    showBodyUploadStatus("");
     showImagePreview("");
+    loadBody("");
   }
 
   function resetVideo() {
@@ -591,39 +831,35 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     $("videoFormHeading").textContent = "새 영상 등록";
   }
 
-  $("articleForm").addEventListener("submit", async event => {
+  $("articleForm").addEventListener("submit",async event => {
     event.preventDefault();
-
     const id = $("articleId").value;
 
     const payload = {
-      title: $("articleTitle").value.trim(),
-      slug: $("articleSlug").value.trim(),
-      category: $("articleCategory").value,
-      excerpt: $("articleExcerpt").value,
-      body: $("articleBody").value,
-      thumbnail_url: $("articleThumbnail").value.trim(),
-      published: $("articlePublished").checked
+      title:$("articleTitle").value.trim(),
+      slug:$("articleSlug").value.trim(),
+      category:$("articleCategory").value,
+      excerpt:$("articleExcerpt").value,
+      body:serializeBody(),
+      thumbnail_url:$("articleThumbnail").value.trim(),
+      published:$("articlePublished").checked
     };
 
     try {
-      await api(id ? `/api/articles/${id}` : "/api/articles", {
-        method: id ? "PUT" : "POST",
-        body: JSON.stringify(payload)
+      await api(id ? `/api/articles/${id}` : "/api/articles",{
+        method:id ? "PUT":"POST",
+        body:JSON.stringify(payload)
       });
-
       resetArticle();
       await refreshArticles();
-      showMessage(id ? "기사를 수정했습니다." : "기사를 등록했습니다.");
-
-    } catch (error) {
-      showMessage(error.message, true);
+      showMessage(id ? "기사를 수정했습니다.":"기사를 등록했습니다.");
+    } catch(error) {
+      showMessage(error.message,true);
     }
   });
 
-  $("videoForm").addEventListener("submit", async event => {
+  $("videoForm").addEventListener("submit",async event => {
     event.preventDefault();
-
     const id = $("videoId").value;
     const raw = $("youtubeUrl").value.trim();
     let youtubeId = raw;
@@ -631,7 +867,6 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     try {
       if (raw.includes("youtube.com") || raw.includes("youtu.be")) {
         const parsed = new URL(raw);
-
         if (parsed.hostname === "youtu.be") {
           youtubeId = parsed.pathname.split("/").filter(Boolean)[0] || "";
         } else {
@@ -640,40 +875,38 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
         }
       }
     } catch {
-      showMessage("유튜브 주소를 확인해 주세요.", true);
+      showMessage("유튜브 주소를 확인해 주세요.",true);
       return;
     }
 
     if (!/^[a-zA-Z0-9_-]{11}$/.test(youtubeId)) {
-      showMessage("유튜브 URL 또는 11자리 영상 ID를 확인해 주세요.", true);
+      showMessage("유튜브 URL 또는 11자리 영상 ID를 확인해 주세요.",true);
       return;
     }
 
     const payload = {
-      title: $("videoTitle").value.trim(),
-      youtube_id: youtubeId,
-      category: $("videoCategory").value,
-      description: $("videoDescription").value,
-      shoot_date: $("shootDate").value,
-      published: $("videoPublished").checked
+      title:$("videoTitle").value.trim(),
+      youtube_id:youtubeId,
+      category:$("videoCategory").value,
+      description:$("videoDescription").value,
+      shoot_date:$("shootDate").value,
+      published:$("videoPublished").checked
     };
 
     try {
-      await api(id ? `/api/videos/${id}` : "/api/videos", {
-        method: id ? "PUT" : "POST",
-        body: JSON.stringify(payload)
+      await api(id ? `/api/videos/${id}` : "/api/videos",{
+        method:id ? "PUT":"POST",
+        body:JSON.stringify(payload)
       });
-
       resetVideo();
       await refreshVideos();
-      showMessage(id ? "영상을 수정했습니다." : "영상을 등록했습니다.");
-
-    } catch (error) {
-      showMessage(error.message, true);
+      showMessage(id ? "영상을 수정했습니다.":"영상을 등록했습니다.");
+    } catch(error) {
+      showMessage(error.message,true);
     }
   });
 
-  $("articleList").addEventListener("click", async event => {
+  $("articleList").addEventListener("click",async event => {
     const edit = event.target.closest("[data-edit-article]");
     const del = event.target.closest("[data-delete-article]");
 
@@ -686,35 +919,30 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       $("articleSlug").value = a.slug || "";
       $("articleCategory").value = normalizeArticleCategory(a.category);
       $("articleExcerpt").value = a.excerpt || "";
-      $("articleBody").value = a.body || "";
+      loadBody(a.body || "");
       $("articleThumbnail").value = a.thumbnail_url || "";
       $("articlePublished").checked = Boolean(a.published);
-
       $("articleImageFile").value = "";
       $("uploadStatus").textContent = "";
       $("uploadStatus").className = "upload-status";
+      showBodyUploadStatus("");
       showImagePreview(a.thumbnail_url || "");
-
       $("articleFormHeading").textContent = `기사 수정 · ID ${a.id}`;
-      $("articleForm").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("articleForm").scrollIntoView({behavior:"smooth",block:"start"});
     }
 
     if (del && confirm("이 기사를 영구 삭제할까요?")) {
       try {
-        await api(`/api/articles/${del.dataset.deleteArticle}`, {
-          method: "DELETE"
-        });
-
+        await api(`/api/articles/${del.dataset.deleteArticle}`,{method:"DELETE"});
         await refreshArticles();
         showMessage("기사를 삭제했습니다.");
-
-      } catch (error) {
-        showMessage(error.message, true);
+      } catch(error) {
+        showMessage(error.message,true);
       }
     }
   });
 
-  $("videoList").addEventListener("click", async event => {
+  $("videoList").addEventListener("click",async event => {
     const edit = event.target.closest("[data-edit-video]");
     const del = event.target.closest("[data-delete-video]");
 
@@ -725,116 +953,92 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       $("videoId").value = v.id;
       $("videoTitle").value = v.title || "";
       $("youtubeUrl").value = v.youtube_id || "";
-
       const oldCategory = (v.category || "").toUpperCase();
 
       $("videoCategory").value =
-        oldCategory === "STAGE" ||
-        oldCategory.includes("FANCAM") ||
-        oldCategory.includes("PERFORMANCE")
+        oldCategory === "STAGE" || oldCategory.includes("FANCAM") || oldCategory.includes("PERFORMANCE")
           ? "STAGE"
           : oldCategory.includes("FAN EVENT") || oldCategory === "EVENT"
             ? "FAN EVENT"
             : oldCategory.includes("FESTIVAL")
-              ? "FESTIVAL"
-              : "OTHER";
+              ? "FESTIVAL" : "OTHER";
 
       $("videoDescription").value = v.description || "";
       $("shootDate").value = v.shoot_date || "";
       $("videoPublished").checked = Boolean(v.published);
-
       $("videoFormHeading").textContent = `영상 수정 · ID ${v.id}`;
-      $("videoForm").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("videoForm").scrollIntoView({behavior:"smooth",block:"start"});
     }
 
     if (del && confirm("이 영상을 영구 삭제할까요?")) {
       try {
-        await api(`/api/videos/${del.dataset.deleteVideo}`, {
-          method: "DELETE"
-        });
-
+        await api(`/api/videos/${del.dataset.deleteVideo}`,{method:"DELETE"});
         await refreshVideos();
         showMessage("영상을 삭제했습니다.");
-
-      } catch (error) {
-        showMessage(error.message, true);
+      } catch(error) {
+        showMessage(error.message,true);
       }
     }
   });
 
-  // 이미지 URL 직접 입력 시 미리보기 갱신
-  $("articleThumbnail").addEventListener("input", () => {
-    const url = $("articleThumbnail").value.trim();
-    showImagePreview(url);
+  $("articleThumbnail").addEventListener("input",() => {
+    showImagePreview($("articleThumbnail").value.trim());
   });
 
-  // 파일 선택 시 업로드 전에 미리보기
-  $("articleImageFile").addEventListener("change", () => {
+  $("articleImageFile").addEventListener("change",() => {
     const file = $("articleImageFile").files[0];
-
     if (!file) {
       showImagePreview($("articleThumbnail").value.trim());
       return;
     }
-
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      showUploadStatus("JPG, PNG, WEBP, GIF, AVIF 파일만 선택할 수 있습니다.", "error");
+      showUploadStatus("JPG, PNG, WEBP, GIF, AVIF 파일만 선택할 수 있습니다.","error");
       $("articleImageFile").value = "";
       return;
     }
-
     if (file.size > MAX_IMAGE_SIZE) {
-      showUploadStatus("이미지 파일은 최대 30MB까지 선택할 수 있습니다.", "error");
+      showUploadStatus("이미지 파일은 최대 30MB까지 선택할 수 있습니다.","error");
       $("articleImageFile").value = "";
       return;
     }
-
-    const localPreviewUrl = URL.createObjectURL(file);
-    showImagePreview(localPreviewUrl);
+    showImagePreview(URL.createObjectURL(file));
     showUploadStatus(`선택한 파일: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
   });
 
-  $("uploadImageButton").addEventListener("click", uploadArticleImage);
+  $("uploadImageButton").addEventListener("click",uploadArticleImage);
 
-  $("clearImageButton").addEventListener("click", () => {
+  $("clearImageButton").addEventListener("click",() => {
     $("articleImageFile").value = "";
     showUploadStatus("선택한 파일을 초기화했습니다.");
     showImagePreview($("articleThumbnail").value.trim());
   });
 
   document.querySelectorAll("[data-tab]").forEach(button => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click",() => {
       const tab = button.dataset.tab;
-
       document.querySelectorAll("[data-tab]").forEach(item =>
-        item.classList.toggle("active", item === button)
+        item.classList.toggle("active",item === button)
       );
-
-      $("articlesSection").classList.toggle("hidden", tab !== "articles");
-      $("videosSection").classList.toggle("hidden", tab !== "videos");
-
+      $("articlesSection").classList.toggle("hidden",tab !== "articles");
+      $("videosSection").classList.toggle("hidden",tab !== "videos");
       showMessage("");
     });
   });
 
-  $("newArticle").addEventListener("click", resetArticle);
-  $("resetArticle").addEventListener("click", resetArticle);
-  $("newVideo").addEventListener("click", resetVideo);
-  $("resetVideo").addEventListener("click", resetVideo);
+  $("newArticle").addEventListener("click",resetArticle);
+  $("resetArticle").addEventListener("click",resetArticle);
+  $("newVideo").addEventListener("click",resetVideo);
+  $("resetVideo").addEventListener("click",resetVideo);
 
-  $("refreshArticles").addEventListener("click", () =>
-    refreshArticles()
-      .then(() => showMessage("기사 목록을 갱신했습니다."))
-      .catch(e => showMessage(e.message, true))
+  $("refreshArticles").addEventListener("click",() =>
+    refreshArticles().then(() => showMessage("기사 목록을 갱신했습니다.")).catch(e => showMessage(e.message,true))
   );
 
-  $("refreshVideos").addEventListener("click", () =>
-    refreshVideos()
-      .then(() => showMessage("영상 목록을 갱신했습니다."))
-      .catch(e => showMessage(e.message, true))
+  $("refreshVideos").addEventListener("click",() =>
+    refreshVideos().then(() => showMessage("영상 목록을 갱신했습니다.")).catch(e => showMessage(e.message,true))
   );
 
-  $("logout").addEventListener("click", logout);
+  $("logout").addEventListener("click",logout);
 
   if (password) {
     setLoggedIn(true);
@@ -842,6 +1046,8 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   } else {
     setLoggedIn(false);
   }
+
+  loadBody("");
 })();
 </script>
 </body>
