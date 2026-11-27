@@ -9,6 +9,9 @@
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
   },
+  "vars": {
+    "R2_PUBLIC_URL": "https://pub-e9c532cb28494ea287fa99ff9e9c693d.r2.dev"
+  },
   "d1_databases": [
     {
       "binding": "DB",
