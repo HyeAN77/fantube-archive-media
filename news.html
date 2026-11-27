@@ -339,16 +339,14 @@
 
 
     // 새 기사 주소 생성
-    function makeCanonical(article) {
-      const articleSlug = article.slug || slug;
-
-      if (articleSlug) {
-        return SITE_URL + "/news/" +
-          encodeURIComponent(articleSlug);
-      }
-
-      return SITE_URL + "/";
-    }
+   function makeCanonical(article) {
+  const articleSlug = article.slug || slug;
+  if (articleSlug) {
+    return SITE_URL + "/news?slug=" +
+      encodeURIComponent(articleSlug);
+  }
+  return SITE_URL + "/";
+}
 
 
     // 본문 데이터가 새 이미지 블록 형식인지 확인
