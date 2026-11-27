@@ -758,7 +758,7 @@
 
     // 개별 기사 주소: /news.html?slug=슬러그
 const articleUrl = article =>
-  "/news.html?slug=" + encodeURIComponent(article.slug || "");
+  "/news?slug=" + encodeURIComponent(article.slug || "");
 
     const imageUrl = value => {
       if (!value) return "";
