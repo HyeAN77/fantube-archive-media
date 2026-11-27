@@ -49,9 +49,26 @@ textarea{min-height:130px;resize:vertical;line-height:1.65}
 #message.error{color:#ff899b}
 .checkrow{display:flex;align-items:center;gap:10px;margin:12px 0}
 .checkrow input{width:auto}
-.checkrow label{margin:0}
 footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
-@media(max-width:650px){main{margin-top:22px}.panel{padding:17px}.grid{grid-template-columns:1fr;gap:0}.toolbar{align-items:flex-start;flex-direction:column}.brand{font-size:17px}}
+
+/* 이미지 업로드 */
+.upload-box{padding:16px;background:#0a1322;border:1px dashed #40516e;border-radius:10px;margin-bottom:14px}
+.upload-box input[type="file"]{padding:10px;background:#09111f}
+.upload-help{font-size:12px;color:var(--muted);line-height:1.6;margin:9px 0 0}
+.image-preview-wrap{margin-top:14px}
+.image-preview{display:block;max-width:100%;max-height:320px;object-fit:contain;border:1px solid var(--line);border-radius:8px;background:#080d18}
+.upload-status{font-size:13px;line-height:1.6;margin-top:10px;white-space:pre-wrap}
+.upload-status.success{color:var(--green)}
+.upload-status.error{color:#ff899b}
+
+@media(max-width:650px){
+  main{margin-top:22px}
+  .panel{padding:17px}
+  .grid{grid-template-columns:1fr;gap:0}
+  .toolbar{align-items:flex-start;flex-direction:column}
+  .brand{font-size:17px}
+  .upload-box .actions .btn{width:100%}
+}
 </style>
 </head>
 <body>
@@ -94,12 +111,15 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
           <h2 id="articleFormHeading">새 기사 작성</h2>
           <button class="btn secondary" id="newArticle" type="button">새 기사</button>
         </div>
+
         <form id="articleForm">
           <input type="hidden" id="articleId">
+
           <div class="field">
             <label for="articleTitle">기사 제목 *</label>
             <input id="articleTitle" required maxlength="300" placeholder="기사 제목을 입력하세요">
           </div>
+
           <div class="grid">
             <div class="field">
               <label for="articleCategory">카테고리</label>
@@ -116,33 +136,74 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
                 CULTURE · 문화 및 기타 소식
               </p>
             </div>
+
             <div class="field">
               <label for="articleSlug">기사 주소용 슬러그 (선택)</label>
               <input id="articleSlug" placeholder="비워두면 제목으로 자동 생성">
             </div>
           </div>
+
           <div class="field">
             <label for="articleExcerpt">기사 요약</label>
             <textarea id="articleExcerpt" style="min-height:80px" placeholder="기사 목록에 표시할 요약"></textarea>
           </div>
+
           <div class="field">
             <label for="articleBody">기사 본문</label>
             <textarea id="articleBody" style="min-height:240px" placeholder="기사 내용을 입력하세요"></textarea>
           </div>
+
+          <!-- 이미지 업로드 영역 -->
+          <div class="field">
+            <label>대표 이미지 업로드</label>
+
+            <div class="upload-box">
+              <input
+                id="articleImageFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+              >
+
+              <p class="upload-help">
+                JPG, PNG, WEBP, GIF, AVIF 지원 · 최대 30MB<br>
+                이미지 원본 해상도와 파일 형식을 유지하여 R2에 업로드합니다.
+              </p>
+
+              <div class="actions">
+                <button class="btn green" id="uploadImageButton" type="button">
+                  R2에 이미지 업로드
+                </button>
+                <button class="btn secondary" id="clearImageButton" type="button">
+                  선택 초기화
+                </button>
+              </div>
+
+              <div id="uploadStatus" class="upload-status" role="status" aria-live="polite"></div>
+
+              <div id="imagePreviewWrap" class="image-preview-wrap hidden">
+                <img id="articleImagePreview" class="image-preview" alt="대표 이미지 미리보기">
+              </div>
+            </div>
+          </div>
+
           <div class="field">
             <label for="articleThumbnail">대표 이미지 URL</label>
-            <input id="articleThumbnail" type="url" placeholder="https://...">
+            <input id="articleThumbnail" type="url" placeholder="이미지를 업로드하거나 https:// 이미지 주소 입력">
+            <p class="meta">업로드한 이미지 주소가 자동으로 입력됩니다. 외부 이미지 주소도 직접 입력할 수 있습니다.</p>
           </div>
+
           <div class="checkrow">
             <input id="articlePublished" type="checkbox">
             <label for="articlePublished">홈페이지에 공개</label>
           </div>
+
           <div class="actions">
             <button class="btn" type="submit">기사 저장</button>
             <button class="btn secondary" type="button" id="resetArticle">입력 초기화</button>
           </div>
         </form>
       </div>
+
       <div class="panel">
         <div class="toolbar">
           <h2>등록된 기사</h2>
@@ -158,47 +219,54 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
           <h2 id="videoFormHeading">새 영상 등록</h2>
           <button class="btn secondary" id="newVideo" type="button">새 영상</button>
         </div>
+
         <form id="videoForm">
           <input type="hidden" id="videoId">
+
           <div class="field">
             <label for="videoTitle">영상 제목 *</label>
             <input id="videoTitle" required maxlength="300" placeholder="예: 앳하트 나현 직캠">
           </div>
+
           <div class="field">
             <label for="youtubeUrl">유튜브 URL 또는 영상 ID *</label>
             <input id="youtubeUrl" required placeholder="https://www.youtube.com/watch?v=XXXXXXXXXXX">
           </div>
+
           <div class="grid">
             <div class="field">
               <label for="videoCategory">카테고리</label>
-              
-<select id="videoCategory">
-  <option value="STAGE">STAGE CAM</option>
-  <option value="FAN EVENT">FAN EVENT</option>
-  <option value="FESTIVAL">FESTIVAL</option>
-  <option value="OTHER">OTHER (기타)</option>
-</select>
-
+              <select id="videoCategory">
+                <option value="STAGE">STAGE CAM</option>
+                <option value="FAN EVENT">FAN EVENT</option>
+                <option value="FESTIVAL">FESTIVAL</option>
+                <option value="OTHER">OTHER (기타)</option>
+              </select>
             </div>
+
             <div class="field">
               <label for="shootDate">촬영 날짜</label>
               <input id="shootDate" type="date">
             </div>
           </div>
+
           <div class="field">
             <label for="videoDescription">설명</label>
             <textarea id="videoDescription" style="min-height:90px" placeholder="영상 설명을 입력하세요"></textarea>
           </div>
+
           <div class="checkrow">
             <input id="videoPublished" type="checkbox">
             <label for="videoPublished">홈페이지에 공개</label>
           </div>
+
           <div class="actions">
             <button class="btn" type="submit">영상 저장</button>
             <button class="btn secondary" type="button" id="resetVideo">입력 초기화</button>
           </div>
         </form>
       </div>
+
       <div class="panel">
         <div class="toolbar">
           <h2>등록된 영상</h2>
@@ -212,6 +280,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     <button class="btn secondary" id="logout" type="button">로그아웃</button>
   </section>
 </main>
+
 <footer>FANTUBE ARCHIVE MEDIA · ADMIN</footer>
 
 <script>
@@ -220,19 +289,30 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   const $ = (id) => document.getElementById(id);
   const PASSWORD_KEY = "fantube_admin_password";
+  const MAX_IMAGE_SIZE = 30 * 1024 * 1024;
+
+  const ALLOWED_IMAGE_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/avif"
+  ];
+
   let password = sessionStorage.getItem(PASSWORD_KEY) || "";
   let articles = [];
   let videos = [];
 
   function escapeHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;",
-      '"': "&quot;", "'": "&#39;"
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
     })[char]);
   }
 
-  // 기존에 사용하던 기사 카테고리를 새 분류 체계로 연결합니다.
-  // 실제 데이터베이스 값은 해당 기사를 저장할 때 새 값으로 갱신됩니다.
   function normalizeArticleCategory(category) {
     const value = String(category || "").trim().toUpperCase();
 
@@ -252,13 +332,41 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   }
 
   function articleCategoryLabel(category) {
-    const normalized = normalizeArticleCategory(category);
-    return normalized;
+    return normalizeArticleCategory(category);
   }
 
   function showMessage(text, error = false) {
     $("message").textContent = text;
     $("message").classList.toggle("error", error);
+  }
+
+  function showUploadStatus(text, type = "") {
+    const element = $("uploadStatus");
+    element.textContent = text;
+    element.className = "upload-status";
+    if (type) element.classList.add(type);
+  }
+
+  function showImagePreview(url) {
+    const image = $("articleImagePreview");
+    const wrap = $("imagePreviewWrap");
+
+    if (!url) {
+      image.removeAttribute("src");
+      wrap.classList.add("hidden");
+      return;
+    }
+
+    image.onerror = () => {
+      wrap.classList.add("hidden");
+      showUploadStatus("이미지를 불러오지 못했습니다. 이미지 주소를 확인해 주세요.", "error");
+    };
+
+    image.onload = () => {
+      wrap.classList.remove("hidden");
+    };
+
+    image.src = url;
   }
 
   async function api(path, options = {}) {
@@ -285,6 +393,76 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     return data;
   }
 
+  // R2 이미지 업로드
+  async function uploadArticleImage() {
+    const file = $("articleImageFile").files[0];
+
+    if (!file) {
+      showUploadStatus("먼저 업로드할 이미지 파일을 선택해 주세요.", "error");
+      return;
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      showUploadStatus("JPG, PNG, WEBP, GIF, AVIF 파일만 업로드할 수 있습니다.", "error");
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      showUploadStatus("이미지 파일은 최대 30MB까지 업로드할 수 있습니다.", "error");
+      return;
+    }
+
+    if (!password) {
+      showUploadStatus("로그인이 필요합니다.", "error");
+      return;
+    }
+
+    const button = $("uploadImageButton");
+    button.disabled = true;
+    button.textContent = "업로드 중...";
+    showUploadStatus("이미지를 R2에 업로드하고 있습니다. 잠시 기다려 주세요.");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // FormData 전송 시 Content-Type을 직접 지정하지 않습니다.
+      // 브라우저가 multipart boundary를 자동으로 설정합니다.
+      const response = await fetch("/api/admin/upload-image", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${password}`
+        },
+        body: formData
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        logout();
+        throw new Error(data.error || "로그인이 만료되었습니다. 다시 로그인해 주세요.");
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || `이미지 업로드 실패 (${response.status})`);
+      }
+
+      if (!data.url) {
+        throw new Error("업로드는 응답되었지만 이미지 URL을 받지 못했습니다.");
+      }
+
+      $("articleThumbnail").value = data.url;
+      showImagePreview(data.url);
+      showUploadStatus("이미지 업로드가 완료되었습니다. 대표 이미지 URL에 자동 입력했습니다.", "success");
+
+    } catch (error) {
+      showUploadStatus(error.message, "error");
+    } finally {
+      button.disabled = false;
+      button.textContent = "R2에 이미지 업로드";
+    }
+  }
+
   function setLoggedIn(value) {
     $("loginPanel").classList.toggle("hidden", value);
     $("dashboard").classList.toggle("hidden", !value);
@@ -299,24 +477,33 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   $("loginForm").addEventListener("submit", async event => {
     event.preventDefault();
+
     const message = $("loginMessage");
     const entered = $("password").value;
+
     message.textContent = "로그인 확인 중...";
+
     try {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: entered })
       });
+
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || "로그인에 실패했습니다.");
+
+      if (!response.ok) {
+        throw new Error(data.error || "로그인에 실패했습니다.");
+      }
 
       password = entered;
       sessionStorage.setItem(PASSWORD_KEY, password);
       $("password").value = "";
       message.textContent = "";
+
       setLoggedIn(true);
       await refreshAll();
+
     } catch (error) {
       message.textContent = error.message;
     }
@@ -325,10 +512,15 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   function renderArticles() {
     $("articleList").innerHTML = articles.length ? articles.map(a => `
       <div class="item">
-        <div class="item-title">${escapeHTML(a.title)}
-          <span class="status ${a.published ? "live" : "draft"}">${a.published ? "공개" : "임시저장"}</span>
+        <div class="item-title">
+          ${escapeHTML(a.title)}
+          <span class="status ${a.published ? "live" : "draft"}">
+            ${a.published ? "공개" : "임시저장"}
+          </span>
         </div>
-        <div class="meta">ID ${a.id} · ${escapeHTML(articleCategoryLabel(a.category))} · ${escapeHTML(a.created_at || "")}</div>
+        <div class="meta">
+          ID ${a.id} · ${escapeHTML(articleCategoryLabel(a.category))} · ${escapeHTML(a.created_at || "")}
+        </div>
         <div class="actions">
           <button class="btn secondary" data-edit-article="${a.id}">수정</button>
           <button class="btn danger" data-delete-article="${a.id}">삭제</button>
@@ -340,14 +532,21 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
   function renderVideos() {
     $("videoList").innerHTML = videos.length ? videos.map(v => `
       <div class="item">
-        <div class="item-title">${escapeHTML(v.title)}
-          <span class="status ${v.published ? "live" : "draft"}">${v.published ? "공개" : "임시저장"}</span>
+        <div class="item-title">
+          ${escapeHTML(v.title)}
+          <span class="status ${v.published ? "live" : "draft"}">
+            ${v.published ? "공개" : "임시저장"}
+          </span>
         </div>
-        <div class="meta">ID ${v.id} · ${escapeHTML(v.category || "FANCAM")} · YouTube: ${escapeHTML(v.youtube_id)}</div>
+        <div class="meta">
+          ID ${v.id} · ${escapeHTML(v.category || "FANCAM")} · YouTube: ${escapeHTML(v.youtube_id)}
+        </div>
         <div class="actions">
           <button class="btn secondary" data-edit-video="${v.id}">수정</button>
           <button class="btn danger" data-delete-video="${v.id}">삭제</button>
-          <a class="btn secondary" style="text-decoration:none" href="https://www.youtube.com/watch?v=${encodeURIComponent(v.youtube_id)}" target="_blank" rel="noopener">영상 보기</a>
+          <a class="btn secondary" style="text-decoration:none"
+             href="https://www.youtube.com/watch?v=${encodeURIComponent(v.youtube_id)}"
+             target="_blank" rel="noopener">영상 보기</a>
         </div>
       </div>
     `).join("") : '<p class="sub">등록된 영상이 없습니다.</p>';
@@ -367,6 +566,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   async function refreshAll() {
     showMessage("콘텐츠를 불러오는 중...");
+
     try {
       await Promise.all([refreshArticles(), refreshVideos()]);
       showMessage("콘텐츠를 불러왔습니다.");
@@ -379,6 +579,10 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     $("articleForm").reset();
     $("articleId").value = "";
     $("articleFormHeading").textContent = "새 기사 작성";
+    $("articleImageFile").value = "";
+    $("uploadStatus").textContent = "";
+    $("uploadStatus").className = "upload-status";
+    showImagePreview("");
   }
 
   function resetVideo() {
@@ -389,7 +593,9 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   $("articleForm").addEventListener("submit", async event => {
     event.preventDefault();
+
     const id = $("articleId").value;
+
     const payload = {
       title: $("articleTitle").value.trim(),
       slug: $("articleSlug").value.trim(),
@@ -405,9 +611,11 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
         method: id ? "PUT" : "POST",
         body: JSON.stringify(payload)
       });
+
       resetArticle();
       await refreshArticles();
       showMessage(id ? "기사를 수정했습니다." : "기사를 등록했습니다.");
+
     } catch (error) {
       showMessage(error.message, true);
     }
@@ -415,6 +623,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
 
   $("videoForm").addEventListener("submit", async event => {
     event.preventDefault();
+
     const id = $("videoId").value;
     const raw = $("youtubeUrl").value.trim();
     let youtubeId = raw;
@@ -422,6 +631,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     try {
       if (raw.includes("youtube.com") || raw.includes("youtu.be")) {
         const parsed = new URL(raw);
+
         if (parsed.hostname === "youtu.be") {
           youtubeId = parsed.pathname.split("/").filter(Boolean)[0] || "";
         } else {
@@ -453,9 +663,11 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
         method: id ? "PUT" : "POST",
         body: JSON.stringify(payload)
       });
+
       resetVideo();
       await refreshVideos();
       showMessage(id ? "영상을 수정했습니다." : "영상을 등록했습니다.");
+
     } catch (error) {
       showMessage(error.message, true);
     }
@@ -468,6 +680,7 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     if (edit) {
       const a = articles.find(item => String(item.id) === edit.dataset.editArticle);
       if (!a) return;
+
       $("articleId").value = a.id;
       $("articleTitle").value = a.title || "";
       $("articleSlug").value = a.slug || "";
@@ -476,15 +689,25 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
       $("articleBody").value = a.body || "";
       $("articleThumbnail").value = a.thumbnail_url || "";
       $("articlePublished").checked = Boolean(a.published);
+
+      $("articleImageFile").value = "";
+      $("uploadStatus").textContent = "";
+      $("uploadStatus").className = "upload-status";
+      showImagePreview(a.thumbnail_url || "");
+
       $("articleFormHeading").textContent = `기사 수정 · ID ${a.id}`;
       $("articleForm").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     if (del && confirm("이 기사를 영구 삭제할까요?")) {
       try {
-        await api(`/api/articles/${del.dataset.deleteArticle}`, { method: "DELETE" });
+        await api(`/api/articles/${del.dataset.deleteArticle}`, {
+          method: "DELETE"
+        });
+
         await refreshArticles();
         showMessage("기사를 삭제했습니다.");
+
       } catch (error) {
         showMessage(error.message, true);
       }
@@ -498,49 +721,98 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
     if (edit) {
       const v = videos.find(item => String(item.id) === edit.dataset.editVideo);
       if (!v) return;
+
       $("videoId").value = v.id;
       $("videoTitle").value = v.title || "";
       $("youtubeUrl").value = v.youtube_id || "";
-      
-const oldCategory = (v.category || "").toUpperCase();
 
-$("videoCategory").value =
-  oldCategory === "STAGE" ||
-  oldCategory.includes("FANCAM") ||
-  oldCategory.includes("PERFORMANCE")
-    ? "STAGE"
-    : oldCategory.includes("FAN EVENT") || oldCategory === "EVENT"
-      ? "FAN EVENT"
-      : oldCategory.includes("FESTIVAL")
-        ? "FESTIVAL"
-        : "OTHER";
+      const oldCategory = (v.category || "").toUpperCase();
+
+      $("videoCategory").value =
+        oldCategory === "STAGE" ||
+        oldCategory.includes("FANCAM") ||
+        oldCategory.includes("PERFORMANCE")
+          ? "STAGE"
+          : oldCategory.includes("FAN EVENT") || oldCategory === "EVENT"
+            ? "FAN EVENT"
+            : oldCategory.includes("FESTIVAL")
+              ? "FESTIVAL"
+              : "OTHER";
 
       $("videoDescription").value = v.description || "";
       $("shootDate").value = v.shoot_date || "";
       $("videoPublished").checked = Boolean(v.published);
+
       $("videoFormHeading").textContent = `영상 수정 · ID ${v.id}`;
       $("videoForm").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     if (del && confirm("이 영상을 영구 삭제할까요?")) {
       try {
-        await api(`/api/videos/${del.dataset.deleteVideo}`, { method: "DELETE" });
+        await api(`/api/videos/${del.dataset.deleteVideo}`, {
+          method: "DELETE"
+        });
+
         await refreshVideos();
         showMessage("영상을 삭제했습니다.");
+
       } catch (error) {
         showMessage(error.message, true);
       }
     }
   });
 
+  // 이미지 URL 직접 입력 시 미리보기 갱신
+  $("articleThumbnail").addEventListener("input", () => {
+    const url = $("articleThumbnail").value.trim();
+    showImagePreview(url);
+  });
+
+  // 파일 선택 시 업로드 전에 미리보기
+  $("articleImageFile").addEventListener("change", () => {
+    const file = $("articleImageFile").files[0];
+
+    if (!file) {
+      showImagePreview($("articleThumbnail").value.trim());
+      return;
+    }
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      showUploadStatus("JPG, PNG, WEBP, GIF, AVIF 파일만 선택할 수 있습니다.", "error");
+      $("articleImageFile").value = "";
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      showUploadStatus("이미지 파일은 최대 30MB까지 선택할 수 있습니다.", "error");
+      $("articleImageFile").value = "";
+      return;
+    }
+
+    const localPreviewUrl = URL.createObjectURL(file);
+    showImagePreview(localPreviewUrl);
+    showUploadStatus(`선택한 파일: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+  });
+
+  $("uploadImageButton").addEventListener("click", uploadArticleImage);
+
+  $("clearImageButton").addEventListener("click", () => {
+    $("articleImageFile").value = "";
+    showUploadStatus("선택한 파일을 초기화했습니다.");
+    showImagePreview($("articleThumbnail").value.trim());
+  });
+
   document.querySelectorAll("[data-tab]").forEach(button => {
     button.addEventListener("click", () => {
       const tab = button.dataset.tab;
+
       document.querySelectorAll("[data-tab]").forEach(item =>
         item.classList.toggle("active", item === button)
       );
+
       $("articlesSection").classList.toggle("hidden", tab !== "articles");
       $("videosSection").classList.toggle("hidden", tab !== "videos");
+
       showMessage("");
     });
   });
@@ -549,8 +821,19 @@ $("videoCategory").value =
   $("resetArticle").addEventListener("click", resetArticle);
   $("newVideo").addEventListener("click", resetVideo);
   $("resetVideo").addEventListener("click", resetVideo);
-  $("refreshArticles").addEventListener("click", () => refreshArticles().then(() => showMessage("기사 목록을 갱신했습니다.")).catch(e => showMessage(e.message, true)));
-  $("refreshVideos").addEventListener("click", () => refreshVideos().then(() => showMessage("영상 목록을 갱신했습니다.")).catch(e => showMessage(e.message, true)));
+
+  $("refreshArticles").addEventListener("click", () =>
+    refreshArticles()
+      .then(() => showMessage("기사 목록을 갱신했습니다."))
+      .catch(e => showMessage(e.message, true))
+  );
+
+  $("refreshVideos").addEventListener("click", () =>
+    refreshVideos()
+      .then(() => showMessage("영상 목록을 갱신했습니다."))
+      .catch(e => showMessage(e.message, true))
+  );
+
   $("logout").addEventListener("click", logout);
 
   if (password) {
