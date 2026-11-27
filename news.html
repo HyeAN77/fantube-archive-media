@@ -13,42 +13,19 @@
     content="FANTUBE ARCHIVE MEDIA의 K-POP 및 문화·연예 뉴스"
   >
 
-  <!-- 검색엔진 대표 URL -->
   <link
     rel="canonical"
     id="canonical-url"
     href="https://fantubearchive.com/"
   >
 
-  <!-- Open Graph -->
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="FANTUBE ARCHIVE MEDIA">
+  <meta property="og:title" id="og-title" content="FANTUBE ARCHIVE MEDIA">
+  <meta property="og:description" id="og-description" content="K-POP 및 문화·연예 뉴스">
+  <meta property="og:url" id="og-url" content="https://fantubearchive.com/">
+  <meta property="og:image" id="og-image" content="">
 
-  <meta
-    property="og:title"
-    id="og-title"
-    content="FANTUBE ARCHIVE MEDIA"
-  >
-
-  <meta
-    property="og:description"
-    id="og-description"
-    content="K-POP 및 문화·연예 뉴스"
-  >
-
-  <meta
-    property="og:url"
-    id="og-url"
-    content="https://fantubearchive.com/"
-  >
-
-  <meta
-    property="og:image"
-    id="og-image"
-    content=""
-  >
-
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" id="twitter-title" content="FANTUBE ARCHIVE MEDIA">
   <meta name="twitter:description" id="twitter-description" content="K-POP 및 문화·연예 뉴스">
@@ -97,6 +74,7 @@
 
     .article-body p {
       margin: 0 0 24px;
+      white-space: pre-wrap;
     }
 
     .article-photo {
@@ -117,9 +95,10 @@
       color: #888;
       font-size: 12px;
       line-height: 1.6;
+      white-space: pre-wrap;
     }
 
-    .article-photo figcaption span {
+    .article-photo .photo-credit {
       display: block;
       margin-top: 4px;
       font-size: 10px;
@@ -136,6 +115,50 @@
     .article-body[hidden],
     .article-photo[hidden] {
       display: none;
+    }
+
+    .article-inline-photo {
+      margin: 36px 0;
+      padding: 0;
+    }
+
+    .article-inline-photo img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      border-radius: 4px;
+    }
+
+    .article-inline-photo figcaption {
+      margin-top: 10px;
+      color: #888;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+
+    .article-body > p:last-child {
+      margin-top: 48px;
+    }
+
+    @media (max-width: 600px) {
+      .article-page {
+        padding: 65px 18px;
+      }
+
+      .article-body {
+        font-size: 16px;
+        line-height: 1.9;
+      }
+
+      .article-inline-photo {
+        margin: 28px 0;
+      }
+
+      .article-title {
+        font-size: clamp(27px, 7vw, 38px);
+      }
     }
   </style>
 </head>
@@ -166,7 +189,9 @@
 
     <article class="article-body" id="article-content" hidden>
 
+      <!-- 대표 이미지 -->
       <figure class="article-photo" id="article-photo" hidden>
+
         <img
           id="article-image"
           src=""
@@ -174,10 +199,12 @@
         >
 
         <figcaption>
-          <span>PHOTO © FANTUBE ARCHIVE MEDIA</span>
+          <span class="photo-credit">PHOTO © FANTUBE ARCHIVE MEDIA</span>
         </figcaption>
+
       </figure>
 
+      <!-- 본문 텍스트 및 이미지 -->
       <div id="article-text"></div>
 
       <p>
@@ -198,7 +225,7 @@
       새 주소:
       /news/기사슬러그
 
-      기존 주소도 호환:
+      기존 주소 호환:
       /gisa?slug=기사슬러그
       /gisa?id=기사ID
     */
@@ -324,10 +351,49 @@
     }
 
 
+    // 본문 데이터가 새 이미지 블록 형식인지 확인
+    function parseStructuredBody(body) {
+      if (typeof body !== "string") {
+        return null;
+      }
+
+      try {
+        const parsed = JSON.parse(body);
+
+        if (
+          parsed &&
+          parsed.version === 1 &&
+          Array.isArray(parsed.blocks)
+        ) {
+          return parsed.blocks;
+        }
+      } catch (error) {
+        // 기존 일반 텍스트 본문이면 아래에서 처리
+      }
+
+      return null;
+    }
+
+
+    // SEO 설명용 텍스트 추출
+    function extractBodyText(body) {
+      const blocks = parseStructuredBody(body);
+
+      if (blocks) {
+        return blocks
+          .filter(block => block && block.type === "text")
+          .map(block => String(block.text || ""))
+          .join(" ");
+      }
+
+      return String(body || "")
+        .replace(/<[^>]*>/g, " ");
+    }
+
+
     // 기사 설명 생성
     function makeDescription(body, title) {
-      const cleanText = String(body || "")
-        .replace(/<[^>]*>/g, " ")
+      const cleanText = extractBodyText(body)
         .replace(/\s+/g, " ")
         .trim();
 
@@ -390,33 +456,146 @@
     }
 
 
-    // 기사 본문 표시
-    function renderBody(body) {
-      textElement.replaceChildren();
-
-      const paragraphs = String(body || "")
+    // 텍스트 블록을 문단으로 표시
+    function renderTextBlock(text) {
+      const normalized = String(text || "")
         .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n");
+
+      const paragraphs = normalized
         .split(/\n\s*\n/)
         .map(paragraph => paragraph.trim())
         .filter(Boolean);
 
-      if (paragraphs.length === 0) {
+      for (const paragraph of paragraphs) {
         const p = document.createElement("p");
-
-        p.textContent = "등록된 본문이 없습니다.";
-
+        p.textContent = paragraph;
         textElement.appendChild(p);
+      }
+    }
+
+
+    // 이미지 주소 검사
+    function getSafeImageUrl(value) {
+      const rawUrl = String(value || "").trim();
+
+      if (!rawUrl) return "";
+
+      try {
+        const url = new URL(rawUrl, SITE_URL);
+
+        if (
+          url.protocol !== "https:" &&
+          url.protocol !== "http:"
+        ) {
+          return "";
+        }
+
+        return url.href;
+      } catch (error) {
+        return "";
+      }
+    }
+
+
+    // 본문 이미지 표시
+    function renderInlineImage(block) {
+      const imageUrl = getSafeImageUrl(block.url);
+
+      if (!imageUrl) return;
+
+      const figure = document.createElement("figure");
+      figure.className = "article-inline-photo";
+
+      const img = document.createElement("img");
+
+      img.src = imageUrl;
+      img.alt = String(block.caption || "기사 사진");
+      img.loading = "lazy";
+      img.decoding = "async";
+
+      figure.appendChild(img);
+
+      const captionText = String(block.caption || "").trim();
+
+      if (captionText) {
+        const caption = document.createElement("figcaption");
+        caption.textContent = captionText;
+        figure.appendChild(caption);
+      }
+
+      textElement.appendChild(figure);
+    }
+
+
+    // 기사 본문 표시
+    function renderBody(body) {
+      textElement.replaceChildren();
+
+      const blocks = parseStructuredBody(body);
+
+      // 새 형식: 텍스트와 이미지 블록을 순서대로 표시
+      if (blocks) {
+        for (const block of blocks) {
+          if (!block || typeof block !== "object") {
+            continue;
+          }
+
+          if (block.type === "text") {
+            renderTextBlock(block.text);
+          }
+
+          if (block.type === "image") {
+            renderInlineImage(block);
+          }
+        }
+
+        if (!textElement.hasChildNodes()) {
+          const p = document.createElement("p");
+          p.textContent = "등록된 본문이 없습니다.";
+          textElement.appendChild(p);
+        }
 
         return;
       }
 
-      for (const paragraph of paragraphs) {
+      // 기존 형식: 일반 텍스트 본문 호환
+      renderTextBlock(body);
+
+      if (!textElement.hasChildNodes()) {
         const p = document.createElement("p");
-
-        p.textContent = paragraph;
-
+        p.textContent = "등록된 본문이 없습니다.";
         textElement.appendChild(p);
       }
+    }
+
+
+    // 대표 이미지 표시
+    function renderThumbnail(article) {
+      const imageUrl = getSafeImageUrl(
+        article.thumbnail_url
+      );
+
+      if (!imageUrl) {
+        photoElement.hidden = true;
+        imageElement.removeAttribute("src");
+        return;
+      }
+
+      imageElement.alt =
+        article.title || "기사 대표 사진";
+
+      imageElement.onload = () => {
+        photoElement.hidden = false;
+      };
+
+      imageElement.onerror = () => {
+        photoElement.hidden = true;
+        imageElement.removeAttribute("src");
+      };
+
+      imageElement.src = imageUrl;
+      photoElement.hidden = false;
     }
 
 
@@ -490,37 +669,10 @@
 
 
         // 대표 이미지
-        const imageUrl =
-          String(article.thumbnail_url || "").trim();
-
-        if (imageUrl) {
-
-          imageElement.alt =
-            article.title || "기사 사진";
-
-          imageElement.onload = () => {
-            photoElement.hidden = false;
-          };
-
-          imageElement.onerror = () => {
-            photoElement.hidden = true;
-            imageElement.removeAttribute("src");
-          };
-
-          imageElement.src = imageUrl;
-
-          photoElement.hidden = false;
-
-        } else {
-
-          photoElement.hidden = true;
-
-          imageElement.removeAttribute("src");
-
-        }
+        renderThumbnail(article);
 
 
-        // 본문 표시
+        // 본문 텍스트 및 여러 장의 사진
         renderBody(article.body);
 
 
